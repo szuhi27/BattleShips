@@ -8,9 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\Fog.png" />
     <None Remove="Images\Logo.ico" />
     <None Remove="Images\Logo.png" />
     <None Remove="Images\MainBcg.jpg" />
+    <None Remove="Images\PlayBcg.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\Fog.png" />
+    <Resource Include="Images\PlayBcg.jpg" />
   </ItemGroup>
 
   <ItemGroup>
