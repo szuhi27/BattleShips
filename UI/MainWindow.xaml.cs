@@ -25,5 +25,16 @@ namespace BattleShips
             InitializeComponent();
         }
 
+        private void PlayB_Click(object sender, RoutedEventArgs e)
+        {
+            UI.PlayWindow playWindow = new UI.PlayWindow();
+            this.Visibility = Visibility.Hidden;
+            playWindow.Show();
+        }
+
+        private void HSB_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("highscores Clicked");
+        }
     }
 }
