@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BattleShips"
         mc:Ignorable="d"
-        Title="BattleShips" Height="1000" Width="800" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Cursor="Hand" WindowStyle="SingleBorderWindow" Icon="/Images/Logo.ico">
+        Title="BattleShips" Height="1000" Width="800" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Cursor="Hand" WindowStyle="SingleBorderWindow" Icon="/Images/Logo.ico" SnapsToDevicePixels="True">
     <Grid>
         <Image HorizontalAlignment="Left" Height="1000" Margin="0,0,0,0" VerticalAlignment="Top" Width="800" Source="/Images/MainBcg.jpg" Stretch="Fill"/>
         <Button Content="Play" x:Name="PlayB" Click="PlayB_Click" HorizontalAlignment="Center" Margin="0,340,0,0" VerticalAlignment="Top" Height="206" Width="554" FontFamily="Stencil" FontSize="72" Background="#FF907AFF"/>
         <Button Content="HighScores" x:Name="HSB" Click="HSB_Click" HorizontalAlignment="Center" Margin="0,616,0,0" VerticalAlignment="Top" Height="206" Width="554" FontFamily="Stencil" FontSize="72" Background="#FF907AFF"/>
-        <Label Content="BattleShips" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="0,150,0,0" VerticalAlignment="Top" Height="134" Width="706" FontFamily="Stencil" FontSize="100"/>
+        <Label Content="BattleShips" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="0,144,0,0" VerticalAlignment="Top" Height="134" Width="673" FontFamily="Stencil" FontSize="100"/>
     </Grid>
 </Window>

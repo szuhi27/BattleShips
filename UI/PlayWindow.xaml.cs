@@ -19,9 +19,18 @@ namespace BattleShips.UI
     /// </summary>
     public partial class PlayWindow : Window
     {
+
+        //private GroupBox p1Own, p2Own, p1Enemy, p2Enemy;
+
         public PlayWindow()
         {
             InitializeComponent();
+            /*p1Own = (GroupBox)this.FindName("P1Own");
+            p2Own = (GroupBox)this.FindName("P2Own");
+            p1Enemy = (GroupBox)this.FindName("P1Enemy");
+            p2Enemy = (GroupBox)this.FindName("P2Enemy");
+            P2E1_1.Background = new SolidColorBrush(Colors.Black);*/
+
         }
 
         private void PlayW_Closed(object sender, EventArgs e)
@@ -29,6 +38,24 @@ namespace BattleShips.UI
             MainWindow mainWindow = new MainWindow();
             this.Visibility = Visibility.Collapsed;
             mainWindow.Show();  
+        }
+
+        private void P2SetupClick(object sender, RoutedEventArgs e)
+        {
+            Button? button = sender as Button;
+            var coordinates = button.Content.ToString(); //.Split('\u002C');
+            //MessageBox.Show(coordinates);
+            button.Background = new SolidColorBrush(Colors.Black);
+
+        }
+
+        private void P2AttackClick(object sender, RoutedEventArgs e)
+        {
+            Button? button = sender as Button;
+            var coordinates = button.Content.ToString(); //.Split('\u002C');
+            //MessageBox.Show(coordinates);
+            button.Background = new SolidColorBrush(Colors.Black);
+
         }
     }
 }
