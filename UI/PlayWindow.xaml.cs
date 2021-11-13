@@ -20,6 +20,7 @@ namespace BattleShips.UI
         private Customs.GameSave gameSave = new();
         private Customs.Coordinate[] p1Ships = new Customs.Coordinate[12], p2Ships = new Customs.Coordinate[12];
         private Customs.AiBehav aiBehav = new Customs.AiBehav();
+        private bool aiShipsCreated;
 
         public PlayWindow()
         {
@@ -27,6 +28,7 @@ namespace BattleShips.UI
             TopLabel.Content = "Coose game mode!";
             PvAIB.Visibility = Visibility.Visible;
             PvPB.Visibility = Visibility.Visible;
+            aiShipsCreated = false;
         }
 
         private void PlayW_Closed(object sender, EventArgs e)
@@ -55,9 +57,12 @@ namespace BattleShips.UI
 
         private void P2SetupClick(object sender, RoutedEventArgs e)
         {
-            Button? button = sender as Button;
-            var coordinates = button.Content.ToString(); //.Split('\u002C');
-            button.Background = new SolidColorBrush(Colors.Black);
+            if (!aiShipsCreated)
+            {
+                Button? button = sender as Button;
+                var coordinates = button.Content.ToString();
+                button.Background = new SolidColorBrush(Colors.Black);
+            }
         }
 
         private void P2AttackClick(object sender, RoutedEventArgs e)
@@ -127,11 +132,12 @@ namespace BattleShips.UI
 
         private void SetAiFields()
         {
-            for(int i = 0; i < 4; i++)
+            for(int i = 0; i < p2Ships.Length; i++)
             {
                 Button button = (Button)P2Own.FindName("P2Field_" + p2Ships[i].R+"_"+p2Ships[i].C);
                 button.Background = new SolidColorBrush(Colors.Black);
             }
+            aiShipsCreated = true;
         }
 
         private void PlayerSetup()
