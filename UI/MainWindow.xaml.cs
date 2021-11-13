@@ -34,7 +34,20 @@ namespace BattleShips
 
         private void HSB_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("highscores Clicked");
+            BackB.Visibility = Visibility.Visible;
+            HSPanel.Visibility = Visibility.Visible;
+            PlayB.Visibility = Visibility.Hidden;
+            HSB.Visibility = Visibility.Hidden;
+            BSLabel.Visibility = Visibility.Hidden;
+        }
+
+        private void BackB_Click(object sender, RoutedEventArgs e)
+        {
+            BackB.Visibility = Visibility.Hidden;
+            HSPanel.Visibility = Visibility.Hidden;
+            PlayB.Visibility = Visibility.Visible;
+            HSB.Visibility = Visibility.Visible;
+            BSLabel.Visibility = Visibility.Visible;
         }
     }
 }

@@ -14,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace BattleShips.UI
 {
-    /// <summary>
-    /// Interaction logic for PlayWindow.xaml
-    /// </summary>
     public partial class PlayWindow : Window
     {
 
@@ -28,12 +25,6 @@ namespace BattleShips.UI
             TopLabel.Content = "Coose game mode!";
             PvAIB.Visibility = Visibility.Visible;
             PvPB.Visibility = Visibility.Visible;
-            /*p1Own = (GroupBox)this.FindName("P1Own");
-            p2Own = (GroupBox)this.FindName("P2Own");
-            p1Enemy = (GroupBox)this.FindName("P1Enemy");
-            p2Enemy = (GroupBox)this.FindName("P2Enemy");
-            P2E1_1.Background = new SolidColorBrush(Colors.Black);*/
-
         }
 
         private void PlayW_Closed(object sender, EventArgs e)
@@ -64,7 +55,6 @@ namespace BattleShips.UI
             Button? button = sender as Button;
             var coordinates = button.Content.ToString(); //.Split('\u002C');
             button.Background = new SolidColorBrush(Colors.Black);
-
         }
 
         private void P2AttackClick(object sender, RoutedEventArgs e)
@@ -122,12 +112,22 @@ namespace BattleShips.UI
             if(num == 0)
             {
                 MessageBox.Show("You start the game!");
+                PlayerSetup();
             }
             else
             {
                 MessageBox.Show("The Ai starts the game!");
                 AiSetup();
             }
+        }
+
+        private void PlayerSetup()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AiSetup()
+        {
         }
 
         private void SaveP2_Click(object sender, RoutedEventArgs e)
@@ -139,9 +139,8 @@ namespace BattleShips.UI
         }
 
 
-        private void AiSetup()
-        {
+        
 
-        }
+
     }
 }
