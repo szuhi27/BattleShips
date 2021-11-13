@@ -10,14 +10,18 @@ namespace BattleShips.Customs
     internal class AiBehav 
     {
 
-        private int shootNum;
+        private int shootNum, saves, trys;
         private Coordinate[] prevShots = new Coordinate[36], prevHits = new Coordinate[12], shipCords = new Coordinate[12]; 
         private Coordinate currentShoot, prevHit;
 
         public Coordinate[] GenerateShips() {
+            shipCords = new Coordinate[12];
+            saves = 0;
+            trys = 0;
             Carrier();
-            Destroyer1();
-            Destroyer2();
+            DestroyerCordCalc();
+            //Destroyer1();
+            //Destroyer2();
             Hunter();
             return shipCords;
         }
@@ -32,6 +36,7 @@ namespace BattleShips.Customs
             for(int i = 0; i < carrierCords.Length; i++)
             {
                 shipCords[i] = carrierCords[i];
+                saves++;
             }
         }
 
@@ -64,24 +69,236 @@ namespace BattleShips.Customs
             }
 
             Random rand = new Random();
-            int place = rand.Next(0, 2);
+            int place = rand.Next(0,2);
             Coordinate[] carrCard = new Coordinate[] {possibleCords[place][0], possibleCords[place][1], possibleCords[place][2], possibleCords[place][3]};
             return carrCard;
         }
 
-        private void Destroyer1()
+        /*private void Destroyer1()
         {
-            throw new NotImplementedException();
-        }
+            Coordinate start = new();
+            Random random = new();
+            start.R = random.Next(1,7);
+            start.C = random.Next(1,7);
+            Coordinate[] destrCords = DestroyerCordCalc(start);
+            int place = 0;
+            for (int i = saves; i < destrCords.Length; i++)
+            {
+                shipCords[i] = destrCords[place];
+                place++;
+                saves++;
+            }
+        }*/
 
-        private void Destroyer2()
+        /*private void Destroyer2()
         {
-            throw new NotImplementedException();
+            Coordinate start = new();
+            Random random = new();
+            start.R = random.Next(1,7);
+            start.C = random.Next(1,7);
+            Coordinate[] destrCords = DestroyerCordCalc(start);
+            int place = 0;
+            if(destrCords[0].R == 0)
+            {
+                Destroyer2();
+            }
+            else
+            {
+                for (int i = saves; i < destrCords.Length; i++)
+                {
+                    shipCords[i] = destrCords[place];
+                    place++;
+                    saves++;
+                }
+            }
+            
+        }*/
+
+        //private Coordinate[] DestroyerCordCalc(Coordinate start)
+        private void DestroyerCordCalc()
+        {
+            Coordinate start = new();
+            Random random = new();
+            start.R = random.Next(1, 7);
+            start.C = random.Next(1, 7);
+            int posibilities = 0;
+            //Coordinate[] destrCard = new Coordinate[3];
+            //Coordinate[] tempCord = new Coordinate[3];
+            Coordinate[][] possibleCords = new Coordinate[4][];
+            int goodCord = 0;
+
+           // possibleCords[0] = new Coordinate[] {start, new Coordinate(start.R - 1, start.C), new Coordinate(start.R - 2, start.C)};
+            //Console.WriteLine("asd: "+possibleCords[0][0].R);
+
+            if (start.R - 2 >= 1)
+            {
+                possibleCords[goodCord] = new Coordinate[] {start,new Coordinate(start.R-1,start.C),new Coordinate(start.R-2,start.C)};
+                if(!CollisionCheck(possibleCords[goodCord]))
+                {
+                    //possibleCords[goodCord] = new Coordinate[] { tempCord[0], tempCord[1], tempCord[2]};
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+            if (start.R + 2 <= 6)
+            {
+                possibleCords[goodCord] = new Coordinate[] {start, new Coordinate(start.R+1,start.C), new Coordinate(start.R+2,start.C)};
+                if (!CollisionCheck(possibleCords[goodCord]))
+                {
+                    //possibleCords[goodCord] = new Coordinate[] { tempCord[0], tempCord[1], tempCord[2] };
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+            if (start.C - 2 >= 1)
+            {
+                possibleCords[goodCord] = new Coordinate[] {start, new Coordinate(start.R,start.C-1), new Coordinate(start.R,start.C-2)};
+                if (!CollisionCheck(possibleCords[goodCord]))
+                {
+                    //possibleCords[goodCord] = new Coordinate[] { tempCord[0], tempCord[1], tempCord[2] };
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+            if (start.C + 2 <= 6)
+            {
+                possibleCords[goodCord] = new Coordinate[] {start, new Coordinate(start.R,start.C+1), new Coordinate(start.R,start.C+2)};
+                if (!CollisionCheck(possibleCords[goodCord]))
+                {
+                    //possibleCords[goodCord] = new Coordinate[] { tempCord[0], tempCord[1], tempCord[2] };
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+
+
+            if (posibilities > 0)
+            {
+                Random rand = new Random();
+                int place = rand.Next(0,goodCord);
+                //destrCard = new Coordinate[] { possibleCords[place][0], possibleCords[place][1], possibleCords[place][2]};
+                /*destrCard[0] = possibleCords[place][0];
+                destrCard[1] = possibleCords[place][1];
+                destrCard[2] = possibleCords[place][2];*/
+                Coordinate[] destrCords = new Coordinate[] { possibleCords[place][0], possibleCords[place][1], possibleCords[place][2] };
+
+                int place2 = 0;
+                for (int i = saves; i < destrCords.Length; i++)
+                {
+                    shipCords[i] = destrCords[place];
+                    place2++;
+                    saves++;
+                }
+            }
+            else if(trys < 10)
+            {
+                DestroyerCordCalc();
+                trys++;
+            }
+            //return destrCard;
         }
 
         private void Hunter()
         {
-            throw new NotImplementedException();
+            Coordinate start = new();
+            Random random = new();
+            start.R = random.Next(1,7);
+            start.C = random.Next(1,7);
+            Coordinate[] huntCords = HunterCordCalc(start, 10);
+            int place = 0;
+            if (huntCords[0].R == 0)
+            {
+                Hunter();
+            }
+            else
+            {
+                for (int i = saves; i < huntCords.Length; i++)
+                {
+                    shipCords[i] = huntCords[place];
+                    place++;
+                    saves++;
+                }
+            }
+        }
+
+        private Coordinate[] HunterCordCalc(Coordinate start, int placedNum)
+        {
+            int posibilities = 0;
+            Coordinate[] destrCord = new Coordinate[2];
+            Coordinate[] tempCord = new Coordinate[2];
+            Coordinate[][] possibleCords = new Coordinate[4][];
+            int goodCord = 0;
+
+            if (start.R - 1 >= 1)
+            {
+                tempCord = new Coordinate[] { start, new Coordinate(start.R - 1, start.C)};
+                if (!CollisionCheck(tempCord))
+                {
+                    possibleCords[goodCord] = tempCord;
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+            if (start.R + 1 <= 6)
+            {
+                tempCord = new Coordinate[] { start, new Coordinate(start.R + 1, start.C)};
+                if (!CollisionCheck(tempCord))
+                {
+                    possibleCords[goodCord] = tempCord;
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+            if (start.C - 1 >= 1)
+            {
+                tempCord = new Coordinate[] { start, new Coordinate(start.R, start.C - 1)};
+                if (!CollisionCheck(tempCord))
+                {
+                    possibleCords[goodCord] = tempCord;
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+            if (start.C + 1 <= 6)
+            {
+                tempCord = new Coordinate[] { start, new Coordinate(start.R, start.C + 1)};
+                if (!CollisionCheck(tempCord))
+                {
+                    possibleCords[goodCord] = tempCord;
+                    posibilities++;
+                    goodCord++;
+                }
+            }
+
+
+            if (posibilities != 0)
+            {
+                Random rand = new Random();
+                int place = rand.Next(0,goodCord);
+                destrCord = new Coordinate[] { possibleCords[place][0], possibleCords[place][1]};
+            }
+            return destrCord;
+        }
+
+        private bool CollisionCheck(Coordinate[] coordinates)
+        {
+            bool didCollide = false;
+            for(int i=0; i<coordinates.Length; i++)
+            {
+                if (didCollide)
+                {
+                    break;
+                }
+                for(int j=0; j < saves; j++)
+                {
+                    if (coordinates[i].Equals(shipCords[j]))
+                    {
+                        didCollide = true;
+                        break;
+                    }
+                }
+            }
+            return didCollide;
         }
 
         public Coordinate Attack()

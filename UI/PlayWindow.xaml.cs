@@ -50,6 +50,7 @@ namespace BattleShips.UI
             var coordinates = button.Content.ToString();
             Button? enemyB = (Button)P2Own.FindName("P2Field_"+coordinates);
             enemyB.Background = new SolidColorBrush(Colors.Black);
+           
         }
 
         private void P2SetupClick(object sender, RoutedEventArgs e)
@@ -110,16 +111,26 @@ namespace BattleShips.UI
         private void ChooseStarer()
         {
             var rand = new Random();
-            int num = rand.Next(0, 2);
+            int num = rand.Next(0,2);
             if(num == 0)
             {
                 MessageBox.Show("You start the game!");
-                PlayerSetup();
+                //PlayerSetup();
             }
             else
             {
                 MessageBox.Show("The Ai starts the game!");
                 p2Ships = aiBehav.GenerateShips();
+                SetAiFields();
+            }
+        }
+
+        private void SetAiFields()
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                Button button = (Button)P2Own.FindName("P2Field_" + p2Ships[i].R+"_"+p2Ships[i].C);
+                button.Background = new SolidColorBrush(Colors.Black);
             }
         }
 
