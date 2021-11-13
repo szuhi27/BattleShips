@@ -9,14 +9,14 @@ namespace BattleShips.Customs
     struct Coordinate
     {
     
-        public int H { get; set; }
-        public int W { get; set; }
+        public int R { get; set; }
+        public int C { get; set; }
 
 
-        public Coordinate(int h, int w)
+        public Coordinate(int row, int column)
         {
-            this.H = h;
-            this.W = w;
+            this.R = row;
+            this.C = column;
         }
 
     }

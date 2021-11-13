@@ -14,10 +14,10 @@ namespace BattleShips.Customs
         private Coordinate[] prevShots = new Coordinate[36], prevHits = new Coordinate[12], shipCords = new Coordinate[12]; 
         private Coordinate currentShoot, prevHit;
 
-        public Coordinate[] PlaceShips() {
+        public Coordinate[] GenerateShips() {
             Carrier();
-            Destroyer();
-            Destroyer();
+            Destroyer1();
+            Destroyer2();
             Hunter();
             return shipCords;
         }
@@ -25,20 +25,60 @@ namespace BattleShips.Customs
         private void Carrier()
         {
             Coordinate start = new();
-            Random random = new Random();
-            start.H = random.Next(1,7);
-            start.W = random.Next(1,7);
-            if (start.H-4<0)
+            Random random = new();
+            start.R = random.Next(1,7);
+            start.C = random.Next(1,7);           
+            Coordinate[] carrierCords = CarrierCordCalc(start);
+            for(int i = 0; i < carrierCords.Length; i++)
             {
-
+                shipCords[i] = carrierCords[i];
             }
-
         }
 
-        private void Destroyer()
+        private Coordinate[] CarrierCordCalc(Coordinate start)
+        {
+            Coordinate[][] possibleCords = new Coordinate[2][];
+            int goodCord = 0;
+            if (start.R - 3 >= 1)
+            {
+                possibleCords[goodCord] = new Coordinate[]
+                    {start,new Coordinate(start.R-1,start.C),new Coordinate(start.R-2,start.C), new Coordinate(start.R-3,start.C)};
+                goodCord++;
+            }
+            if (start.R + 3 <= 6)
+            {
+                possibleCords[goodCord] = new Coordinate[]
+                    {start, new Coordinate(start.R+1,start.C), new Coordinate(start.R+2,start.C), new Coordinate(start.R+3,start.C)};
+                goodCord++;
+            }
+            if (goodCord < 2 && start.C - 3 >= 1)
+            {
+                possibleCords[goodCord] = new Coordinate[]
+                        {start, new Coordinate(start.R,start.C-1), new Coordinate(start.R,start.C-2), new Coordinate(start.R,start.C-3)};
+                goodCord++;
+            }
+            if (goodCord < 2 && start.C + 3 <= 6)
+            {
+                possibleCords[goodCord] = new Coordinate[]
+                    {start, new Coordinate(start.R,start.C+1), new Coordinate(start.R,start.C+2), new Coordinate(start.R,start.C+3)};
+            }
+
+            Random rand = new Random();
+            int place = rand.Next(0, 2);
+            Coordinate[] carrCard = new Coordinate[] {possibleCords[place][0], possibleCords[place][1], possibleCords[place][2], possibleCords[place][3]};
+            return carrCard;
+        }
+
+        private void Destroyer1()
         {
             throw new NotImplementedException();
         }
+
+        private void Destroyer2()
+        {
+            throw new NotImplementedException();
+        }
+
         private void Hunter()
         {
             throw new NotImplementedException();
@@ -47,7 +87,7 @@ namespace BattleShips.Customs
         public Coordinate Attack()
         {
             currentShoot = new Coordinate(0,0);
-            if(prevHit.H == 0 && prevHit.W == 0)
+            if(prevHit.R == 0 && prevHit.C == 0)
             {
                 RandomAttack();
             }
@@ -64,8 +104,8 @@ namespace BattleShips.Customs
         {
             Coordinate curr = new();
             Random random = new Random();
-            curr.H = random.Next(1,7);
-            curr.W = random.Next(1,7);
+            curr.R = random.Next(1,7);
+            curr.C = random.Next(1,7);
             if (!AlreadyShot(curr))
             {
                 currentShoot = curr;

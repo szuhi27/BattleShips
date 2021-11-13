@@ -18,6 +18,8 @@ namespace BattleShips.UI
     {
 
         private Customs.GameSave gameSave = new();
+        private Customs.Coordinate[] p1Ships = new Customs.Coordinate[12], p2Ships = new Customs.Coordinate[12];
+        private Customs.AiBehav aiBehav = new Customs.AiBehav();
 
         public PlayWindow()
         {
@@ -117,17 +119,13 @@ namespace BattleShips.UI
             else
             {
                 MessageBox.Show("The Ai starts the game!");
-                AiSetup();
+                p2Ships = aiBehav.GenerateShips();
             }
         }
 
         private void PlayerSetup()
         {
             throw new NotImplementedException();
-        }
-
-        public void AiSetup()
-        {
         }
 
         private void SaveP2_Click(object sender, RoutedEventArgs e)
