@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="Images\Fog.png" />
+    <None Remove="Images\HSBcg.png" />
     <None Remove="Images\Logo.ico" />
     <None Remove="Images\Logo.png" />
     <None Remove="Images\MainBcg.jpg" />
@@ -17,12 +18,17 @@
 
   <ItemGroup>
     <Resource Include="Images\Fog.png" />
+    <Resource Include="Images\HSBcg.png" />
     <Resource Include="Images\PlayBcg.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Images\Logo.ico" />
     <Resource Include="Images\MainBcg.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>
