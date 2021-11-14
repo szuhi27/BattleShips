@@ -24,7 +24,7 @@ namespace BattleShips.UI
             manualCords = new Customs.Coordinate[2];
         private bool aiShipsCreated, p1ShipsCreated;
         private string currentPlayer, startingPlayer;
-        private int manualChoosen;
+        private int manualChoosen, shipsPlaced;
 
         public PlayWindow()
         {
@@ -60,7 +60,7 @@ namespace BattleShips.UI
                 button.Background = new SolidColorBrush(Colors.Gray);
                 if (manualChoosen == 2)
                 {
-                    PlaceCarrier();
+                    PlaceShip();
                 }
             }
         }
@@ -271,6 +271,42 @@ namespace BattleShips.UI
             ManualSetupB.Visibility = Visibility.Hidden;
         }
 
+        private void ManualReset()
+        {
+            MessageBox.Show("Wrong coordinates!");
+            manualChoosen = 0;
+            if (currentPlayer == "p1")
+            {
+                Button? enemyB = (Button)P1Own.FindName("P1Field_" + manualCords[0].R + "_" + manualCords[0].C);
+                enemyB.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
+                Button? enemyB2 = (Button)P1Own.FindName("P1Field_" + manualCords[1].R + "_" + manualCords[1].C);
+                enemyB2.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
+            }
+            else
+            {
+                Button? enemyB = (Button)P1Own.FindName("P1Field_" + manualCords[0].R + "_" + manualCords[0].C);
+                enemyB.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
+                Button? enemyB2 = (Button)P1Own.FindName("P1Field_" + manualCords[1].R + "_" + manualCords[1].C);
+                enemyB2.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
+            }
+        }
+
+        private void PlaceShip()
+        {
+            switch (shipsPlaced)
+            {
+                case 0:
+                    PlaceCarrier();
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+        }
+
         private void PlaceCarrier()
         {
             Customs.Coordinate[] carrCords = new Customs.Coordinate[4];
@@ -300,10 +336,11 @@ namespace BattleShips.UI
                     }
                     SetAiShips();
                 }
+                shipsPlaced++;
             }
             else
             {
-                MessageBox.Show("Wrong coordinates!");
+                ManualReset();
             }
         }
 
