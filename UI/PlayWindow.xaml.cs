@@ -281,10 +281,10 @@ namespace BattleShips.UI
                     carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
                     if(!carrCords[0].Equals(new Customs.Coordinate()))
                     {
-                        carrCords[0] = p1Ships[0];
-                        carrCords[1] = p1Ships[1];
-                        carrCords[2] = p1Ships[2];
-                        carrCords[3] = p1Ships[3];
+                        p1Ships[0] = carrCords[0];
+                        p1Ships[1] = carrCords[1];
+                        p1Ships[2] = carrCords[2];
+                        p1Ships[3] = carrCords[3];
                     }
                     SetP1Ships();
                 }
@@ -293,10 +293,10 @@ namespace BattleShips.UI
                     carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
                     if (!carrCords[0].Equals(new Customs.Coordinate()))
                     {
-                        carrCords[0] = p2Ships[0];
-                        carrCords[1] = p2Ships[1];
-                        carrCords[2] = p2Ships[2];
-                        carrCords[3] = p2Ships[3];
+                        p2Ships[0] = carrCords[0];
+                        p2Ships[1] = carrCords[1];
+                        p2Ships[2] = carrCords[2];
+                        p2Ships[3] = carrCords[3];
                     }
                     SetAiShips();
                 }
