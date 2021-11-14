@@ -9,7 +9,7 @@ namespace BattleShips.Customs
         public string player1;
         public string player2;
         public string winner;
-        public int round;
+        public int rounds;
         public int p1Hits;
         public int p2Hits;
     }
