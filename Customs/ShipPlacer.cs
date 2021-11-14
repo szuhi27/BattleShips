@@ -16,6 +16,38 @@ namespace BattleShips.Customs
             return shipCords;
         }
 
+        public bool ManualCarrier(Coordinate start, Coordinate nextC)
+        {
+            Coordinate[][] possibleCords = CarrPoss(start);
+            return ManualCheck(possibleCords, nextC);
+        }
+
+        public Coordinate[][] ManualCarrierCords(Coordinate start)
+        {
+            return CarrPoss(start);
+        }
+
+        private bool ManualCheck(Coordinate[][] possibleCords, Coordinate nextC)
+        {
+            bool goodPlace = false;
+            for (int i = 0; i < possibleCords.Length; i++)
+            {
+                if (goodPlace)
+                {
+                    break;
+                }
+                for (int j = 0; j < possibleCords[i].Length; j++)
+                {
+                    if (nextC.Equals(possibleCords[i][j]))
+                    {
+                        goodPlace = true;
+                        break;
+                    }
+                }
+            }
+            return goodPlace;
+        }
+
         private void CarrierCordCalc()
         {
             Coordinate start = new();
@@ -23,6 +55,16 @@ namespace BattleShips.Customs
             start.R = random.Next(1,7);
             start.C = random.Next(1,7);
 
+            Coordinate[][] possibleCords = CarrPoss(start);
+            int place = random.Next(0,2);
+            shipCords[0] = possibleCords[place][0];
+            shipCords[1] = possibleCords[place][1];
+            shipCords[2] = possibleCords[place][2];
+            shipCords[3] = possibleCords[place][3];
+        }
+
+        private static Coordinate[][] CarrPoss(Coordinate start)
+        {
             Coordinate[][] possibleCords = new Coordinate[2][];
             int goodCord = 0;
             if (start.R - 3 >= 1)
@@ -48,12 +90,8 @@ namespace BattleShips.Customs
                 possibleCords[goodCord] = new Coordinate[]
                     {start, new Coordinate(start.R,start.C+1), new Coordinate(start.R,start.C+2), new Coordinate(start.R,start.C+3)};
             }
-
-            int place = random.Next(0,2);
-            shipCords[0] = possibleCords[place][0];
-            shipCords[1] = possibleCords[place][1];
-            shipCords[2] = possibleCords[place][2];
-            shipCords[3] = possibleCords[place][3];
+            
+            return possibleCords;
         }
 
         private void DestroyerCordCalc(int shipNumber)

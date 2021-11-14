@@ -11,12 +11,11 @@ namespace BattleShips.Customs
     {
 
         private int shootNum;
-        private Coordinate[] prevShots = new Coordinate[36], prevHits = new Coordinate[12], shipCords = new Coordinate[12]; 
+        private Coordinate[] prevShots = new Coordinate[36], prevHits = new Coordinate[12]; 
         private Coordinate currentShoot, prevHit;
 
         public Coordinate[] GenerateShips() {
-            shipCords = SetupShips();       
-            return shipCords;
+            return SetupShips();
         }
 
         public Coordinate Attack()
