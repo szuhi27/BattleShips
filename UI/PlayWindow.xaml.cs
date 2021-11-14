@@ -75,11 +75,20 @@ namespace BattleShips.UI
 
         private void P2SetupClick(object sender, RoutedEventArgs e)
         {
-            if (!aiShipsCreated)
+            if (!p1ShipsCreated && manualChoosen < 2)
             {
                 Button? button = sender as Button;
-                var coordinates = button.Content.ToString();
-                button.Background = new SolidColorBrush(Colors.Black);
+                string[] cordsS = button.Content.ToString().Split('_');
+                Customs.Coordinate manCord = new();
+                manCord.R = Int32.Parse(cordsS[0]);
+                manCord.C = Int32.Parse(cordsS[1]);
+                manualCords[manualChoosen] = manCord;
+                manualChoosen++;
+                button.Background = new SolidColorBrush(Colors.Gray);
+                if (manualChoosen == 2)
+                {
+                    PlaceShip();
+                }
             }
         }
 
@@ -144,7 +153,7 @@ namespace BattleShips.UI
         private void ChooseStarterAi()
         {
             p2Ships = aiBehav.GenerateShips();
-            SetAiShips();
+            SetAiShips(12);
             var rand = new Random();
             int num = rand.Next(0, 2);
             if (num == 0)
@@ -191,24 +200,30 @@ namespace BattleShips.UI
             }
         }
 
-        private void SetAiShips()
+        private void SetAiShips(int ships)
         {
-            for (int i = 0; i < p2Ships.Length; i++)
+            for (int i = 0; i < ships; i++)
             {
                 Button button = (Button)P2Own.FindName("P2Field_" + p2Ships[i].R+"_"+p2Ships[i].C);
                 button.Background = new SolidColorBrush(Colors.Black);
             }
-            aiShipsCreated = true;
+            if(ships == 12)
+            {
+                aiShipsCreated = true;
+            }     
         }
 
-        private void SetP1Ships()
+        private void SetP1Ships(int ships)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < ships; i++)
             {
                 Button button = (Button)P1Own.FindName("P1Field_" + p1Ships[i].R + "_" + p1Ships[i].C);
                 button.Background = new SolidColorBrush(Colors.Black);
             }
-            p1ShipsCreated = true;
+            if(ships == 12)
+            {
+                p1ShipsCreated = true;
+            }
         }
 
         private void AutoSetup_Click(object sender, RoutedEventArgs e)
@@ -217,7 +232,7 @@ namespace BattleShips.UI
             {
                 case "p1":
                     p1Ships = aiBehav.GenerateShips();
-                    SetP1Ships();
+                    SetP1Ships(12);
                     if(gameSave.gameMode == "PvAi")
                     {
                         ShipSetupReset();
@@ -233,7 +248,7 @@ namespace BattleShips.UI
                     break;
                 case "p2":
                     p2Ships = aiBehav.GenerateShips();
-                    SetAiShips();
+                    SetAiShips(12);
                     if(startingPlayer == "p2")
                     {
                         currentPlayer = "p1";
@@ -284,9 +299,9 @@ namespace BattleShips.UI
             }
             else
             {
-                Button? enemyB = (Button)P1Own.FindName("P1Field_" + manualCords[0].R + "_" + manualCords[0].C);
+                Button? enemyB = (Button)P2Own.FindName("P2Field_" + manualCords[0].R + "_" + manualCords[0].C);
                 enemyB.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
-                Button? enemyB2 = (Button)P1Own.FindName("P1Field_" + manualCords[1].R + "_" + manualCords[1].C);
+                Button? enemyB2 = (Button)P2Own.FindName("P2Field_" + manualCords[1].R + "_" + manualCords[1].C);
                 enemyB2.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
             }
         }
@@ -299,42 +314,54 @@ namespace BattleShips.UI
                     PlaceCarrier();
                     break;
                 case 1:
+                    PlaceDestr1();
                     break;
                 case 2:
+                    PlaceDestr2();
                     break;
                 case 3:
+                    PlaceHunter();
                     break;
             }
         }
 
         private void PlaceCarrier()
         {
-            Customs.Coordinate[] carrCords = new Customs.Coordinate[4];
             if (manualPlacer.CarrPlaceCheck(manualCords[0], manualCords[1]))
             {
                 if (currentPlayer == "p1")
                 {
-                    carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
+                    Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
                     if(!carrCords[0].Equals(new Customs.Coordinate()))
                     {
                         p1Ships[0] = carrCords[0];
                         p1Ships[1] = carrCords[1];
                         p1Ships[2] = carrCords[2];
                         p1Ships[3] = carrCords[3];
+                        SetP1Ships(4);
+                        manualChoosen = 0;
                     }
-                    SetP1Ships();
+                    else
+                    {
+                        ManualReset();
+                    }
                 }
                 else
                 {
-                    carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
+                    Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
                     if (!carrCords[0].Equals(new Customs.Coordinate()))
                     {
                         p2Ships[0] = carrCords[0];
                         p2Ships[1] = carrCords[1];
                         p2Ships[2] = carrCords[2];
                         p2Ships[3] = carrCords[3];
+                        SetAiShips(4);
+                        manualChoosen=0;
                     }
-                    SetAiShips();
+                    else
+                    {
+                        ManualReset();
+                    }
                 }
                 shipsPlaced++;
             }
@@ -346,17 +373,130 @@ namespace BattleShips.UI
 
         private void PlaceDestr1()
         {
-
+            if (manualPlacer.DestrPlaceCheck(manualCords[0], manualCords[1]))
+            {
+                if (currentPlayer == "p1")
+                {
+                    Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1],p1Ships,4);
+                    if (!coordinates[0].Equals(new Customs.Coordinate()))
+                    {
+                        p1Ships[4] = coordinates[0];
+                        p1Ships[5] = coordinates[1];
+                        p1Ships[6] = coordinates[2];
+                        SetP1Ships(7);
+                        manualChoosen = 0;
+                    }
+                    else
+                    {
+                        ManualReset();
+                    }
+                }
+                else
+                {
+                    Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p2Ships, 4);
+                    if (!coordinates[0].Equals(new Customs.Coordinate()))
+                    {
+                        p2Ships[4] = coordinates[0];
+                        p2Ships[5] = coordinates[1];
+                        p2Ships[6] = coordinates[2];
+                        SetAiShips(7);
+                        manualChoosen = 0;
+                    }
+                    else
+                    {
+                        ManualReset();
+                    }
+                }
+                shipsPlaced++;
+            }
+            else
+            {
+                ManualReset();
+            }
         }
 
         private void PlaceDestr2()
         {
-
+            if (manualPlacer.DestrPlaceCheck(manualCords[0], manualCords[1]))
+            {
+                if (currentPlayer == "p1")
+                {
+                    Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p1Ships, 7);
+                    if (!coordinates[0].Equals(new Customs.Coordinate()))
+                    {
+                        p1Ships[7] = coordinates[0];
+                        p1Ships[8] = coordinates[1];
+                        p1Ships[9] = coordinates[2];
+                        SetP1Ships(10);
+                        manualChoosen = 0;
+                    }
+                    else
+                    {
+                        ManualReset();
+                    }
+                }
+                else
+                {
+                    Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p2Ships, 7);
+                    if (!coordinates[0].Equals(new Customs.Coordinate()))
+                    {
+                        p2Ships[7] = coordinates[0];
+                        p2Ships[8] = coordinates[1];
+                        p2Ships[9] = coordinates[2];
+                        SetAiShips(10);
+                        manualChoosen = 0;
+                    }
+                    else
+                    {
+                        ManualReset();
+                    }
+                }
+                shipsPlaced++;
+            }
+            else
+            {
+                ManualReset();
+            }
         }
 
         private void PlaceHunter()
         {
-
+            if (manualPlacer.HuntPlaceCheck(manualCords[0], manualCords[1]))
+            {
+                if (currentPlayer == "p1")
+                {
+                    Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p1Ships, 10);
+                    if (!coordinates[0].Equals(new Customs.Coordinate()))
+                    {
+                        p1Ships[10] = coordinates[0];
+                        p1Ships[11] = coordinates[1];
+                        ManualSetupFinish();
+                    }
+                    else
+                    {
+                        ManualReset();
+                    }
+                }
+                else
+                {
+                    Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p2Ships, 10);
+                    if (!coordinates[0].Equals(new Customs.Coordinate()))
+                    {
+                        p2Ships[10] = coordinates[0];
+                        p2Ships[11] = coordinates[1];
+                        ManualSetupFinish();
+                    }
+                    else
+                    {
+                        ManualReset();
+                    }
+                }
+                shipsPlaced++;
+            }
+            else
+            {
+                ManualReset();
+            }
         }
         
         private void ManualSetupFinish()
@@ -364,7 +504,7 @@ namespace BattleShips.UI
             switch (currentPlayer)
             {
                 case "p1":
-                    SetP1Ships();
+                    SetP1Ships(12);
                     if (gameSave.gameMode == "PvAi")
                     {
                         ShipSetupReset();
@@ -377,16 +517,24 @@ namespace BattleShips.UI
                     }
                     else if (startingPlayer == "p1")
                     {
+                        P1Fog.Visibility= Visibility.Visible;
                         currentPlayer = "p2";
                         TopLabel.Content = gameSave.player2 + "coose ship placement mode!";
+                        AutoSetupB.Visibility = Visibility.Hidden;
+                        ManualSetupB.Visibility = Visibility.Hidden;
+                        manualChoosen = 0;
                     }
                     break;
                 case "p2":
-                    SetAiShips();
+                    SetAiShips(12);
                     if (startingPlayer == "p2")
                     {
+                        P2Fog.Visibility = Visibility.Visible;
                         currentPlayer = "p1";
-                        TopLabel.Content = gameSave.player1 + "coose ship placement mode!";
+                        TopLabel.Content = gameSave.player2 + "coose ship placement mode!";
+                        AutoSetupB.Visibility = Visibility.Hidden;
+                        ManualSetupB.Visibility = Visibility.Hidden;
+                        manualChoosen = 0;
                     }
                     else if (startingPlayer == "p1")
                     {

@@ -6,12 +6,16 @@ namespace BattleShips.Customs
     {
 
         private Coordinate[] shipCords = new Coordinate[12];
+        private int corrCord;
 
         public Coordinate[] SetupShips()
         {
             CarrierCordCalc();
+            corrCord = 0;
             DestroyerCordCalc(4);
+            corrCord = 0;
             DestroyerCordCalc(7);
+            corrCord = 0;
             HunterCordCalc();
             return shipCords;
         }
@@ -27,12 +31,36 @@ namespace BattleShips.Customs
             return CarrPoss(start);
         }
 
+        public bool ManualDestroyer(Coordinate start, Coordinate nextC)
+        {
+            corrCord = 0;
+            Coordinate[][] possibleCords = DestrPoss(start);
+            return ManualCheck(possibleCords, nextC);
+        }
+
+        public Coordinate[][] ManualDestroyerCords(Coordinate start)
+        {
+            return DestrPoss(start);
+        }
+
+        public bool ManualHunter(Coordinate start, Coordinate nextC)
+        {
+            corrCord = 0;
+            Coordinate[][] possibleCords = HuntPoss(start);
+            return ManualCheck(possibleCords, nextC);
+        }
+
+        public Coordinate[][] ManualHunterCords(Coordinate start)
+        {
+            return HuntPoss(start);
+        }
+
         private bool ManualCheck(Coordinate[][] possibleCords, Coordinate nextC)
         {
             bool goodPlace = false;
             for (int i = 0; i < possibleCords.Length; i++)
             {
-                if (goodPlace)
+                if (goodPlace || possibleCords[i] == null)
                 {
                     break;
                 }
@@ -101,6 +129,26 @@ namespace BattleShips.Customs
             start.R = random.Next(1,7);
             start.C = random.Next(1,7);
 
+            Coordinate[][] possibleCords = DestrPoss(start);
+
+            bool anyGood = false;
+            if (corrCord > 0) { anyGood = true; }
+
+            if (anyGood)
+            {
+                int place = random.Next(0,corrCord);
+                shipCords[shipNumber] = possibleCords[place][0];
+                shipCords[shipNumber+1] = possibleCords[place][1];
+                shipCords[shipNumber+2] = possibleCords[place][2];
+            }
+            else
+            {
+                DestroyerCordCalc(shipNumber);
+            }
+        }
+
+        private Coordinate[][] DestrPoss(Coordinate start)
+        {
             Coordinate[][] possibleCords = new Coordinate[4][];
             int goodCord = 0;
             if (start.R - 2 >= 1)
@@ -135,23 +183,9 @@ namespace BattleShips.Customs
                     goodCord++;
                 }
             }
-
-            bool anyGood = false;
-            if (goodCord > 0) { anyGood = true; }
-
-            if (anyGood)
-            {
-                int place = random.Next(0,goodCord);
-                shipCords[shipNumber] = possibleCords[place][0];
-                shipCords[shipNumber+1] = possibleCords[place][1];
-                shipCords[shipNumber+2] = possibleCords[place][2];
-            }
-            else
-            {
-                DestroyerCordCalc(shipNumber);
-            }
+            corrCord = goodCord;
+            return possibleCords;
         }
- 
 
         private void HunterCordCalc()
         {
@@ -160,6 +194,25 @@ namespace BattleShips.Customs
             start.R = random.Next(1,7);
             start.C = random.Next(1,7);
 
+            Coordinate[][] possibleCords = HuntPoss(start);
+
+            bool anyGood = false;
+            if (corrCord > 0) { anyGood = true; }
+
+            if (anyGood)
+            {
+                int place = random.Next(0, corrCord);
+                shipCords[10] = possibleCords[place][0];
+                shipCords[11] = possibleCords[place][1];
+            }
+            else
+            {
+                HunterCordCalc();
+            }
+        }
+
+        private Coordinate[][] HuntPoss(Coordinate start)
+        {
             Coordinate[][] possibleCords = new Coordinate[4][];
             int goodCord = 0;
             if (start.R - 1 >= 1)
@@ -175,7 +228,7 @@ namespace BattleShips.Customs
                 possibleCords[goodCord] = new Coordinate[] { start, new Coordinate(start.R + 1, start.C) };
                 if (!CollisionCheck(possibleCords[goodCord]))
                 {
-                   goodCord++;
+                    goodCord++;
                 }
             }
             if (start.C - 1 >= 1)
@@ -194,21 +247,8 @@ namespace BattleShips.Customs
                     goodCord++;
                 }
             }
-
-
-            bool anyGood = false;
-            if (goodCord > 0) { anyGood = true; }
-
-            if (anyGood)
-            {
-                int place = random.Next(0, goodCord);
-                shipCords[10] = possibleCords[place][0];
-                shipCords[11] = possibleCords[place][1];
-            }
-            else
-            {
-                HunterCordCalc();
-            }
+            corrCord = goodCord;
+            return possibleCords;
         }
 
         private bool CollisionCheck(Coordinate[] coordinates)

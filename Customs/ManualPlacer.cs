@@ -18,17 +18,55 @@ namespace BattleShips.Customs
         {
             Coordinate[] shipCords = new Coordinate[4];
             Coordinate[][] possibleCords = ManualCarrierCords(start);
-            Coordinate[] carrCord = FindChoosen(possibleCords, start, direction,4);
-            shipCords[0] = carrCord[0];
-            shipCords[1] = carrCord[1];
-            shipCords[2] = carrCord[2];
-            shipCords[3] = carrCord[3];
+            Coordinate[] coordinates = FindChoosen(possibleCords, direction,4);
+            shipCords[0] = coordinates[0];
+            shipCords[1] = coordinates[1];
+            shipCords[2] = coordinates[2];
+            shipCords[3] = coordinates[3];
             return shipCords;
         }
 
-        private Coordinate[] FindChoosen(Coordinate[][] possibleCords, Coordinate start, Coordinate direction, int ship)
+        public bool DestrPlaceCheck(Coordinate start, Coordinate direction)
         {
-            Coordinate[] carrCord = new Coordinate[ship];
+            return ManualDestroyer(start, direction);
+        }
+
+        public Coordinate[] Destroyer(Coordinate start, Coordinate direction, Coordinate[] allShips, int ships)
+        {
+            Coordinate[] shipCords = new Coordinate[3];
+            Coordinate[][] possibleCords = ManualDestroyerCords(start);
+            Coordinate[] coordinates = FindChoosen(possibleCords, direction, 3);
+            bool didCollide = CollisionCheck(shipCords, allShips, ships);
+            if (!didCollide)
+            {
+                shipCords[0] = coordinates[0];
+                shipCords[1] = coordinates[1];
+                shipCords[2] = coordinates[2];
+            }
+            return shipCords;
+        }
+
+        public bool HuntPlaceCheck(Coordinate start, Coordinate direction)
+        {
+            return ManualHunter(start, direction);
+        }
+
+        public Coordinate[] Hunter(Coordinate start, Coordinate direction, Coordinate[] allShips, int ships)
+        {
+            Coordinate[] shipCords = new Coordinate[2];
+            Coordinate[][] possibleCords = ManualHunterCords(start);
+            Coordinate[] coordinates = FindChoosen(possibleCords, direction, 2);
+            if (!CollisionCheck(shipCords, allShips, ships))
+            {
+                shipCords[0] = coordinates[0];
+                shipCords[1] = coordinates[1];
+            }
+            return shipCords;
+        }
+
+        private static Coordinate[] FindChoosen(Coordinate[][] possibleCords, Coordinate direction, int ship)
+        {
+            Coordinate[] cords = new Coordinate[ship];
             bool found = false;
             for (int i = 0; i < possibleCords.Length; i++)
             {
@@ -41,18 +79,22 @@ namespace BattleShips.Customs
                     if (direction.Equals(possibleCords[i][j]))
                     {
                         found = true;
-                        carrCord[0] = possibleCords[i][0];
-                        carrCord[1] = possibleCords[i][1];
-                        carrCord[2] = possibleCords[i][2];
-                        carrCord[3] = possibleCords[i][3];
+                        for(int k = 0; k < cords.Length; k++)
+                        {
+                            cords[k] = possibleCords[i][k];
+                        }
+                        /*cords[0] = possibleCords[i][0];
+                        cords[1] = possibleCords[i][1];
+                        cords[2] = possibleCords[i][2];
+                        cords[3] = possibleCords[i][3];*/
                         break;
                     }
                 }
             }
-            return carrCord;
+            return cords;
         }
 
-        public bool CollisionCheck(Coordinate[] coordinates, Coordinate[] shipCords)
+        public static bool CollisionCheck(Coordinate[] coordinates, Coordinate[] shipCords, int ships)
         {
             bool didCollide = false;
             for (int i = 0; i < coordinates.Length; i++)
