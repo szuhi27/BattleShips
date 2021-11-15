@@ -31,18 +31,18 @@ namespace BattleShips.Customs
             return ManualDestroyer(start, direction);
         }
 
-        public Coordinate[] Destroyer(Coordinate start, Coordinate direction, Coordinate[] allShips, int ships)
+        public Coordinate[] Destroyer(Coordinate start, Coordinate direction, Coordinate[] allShips)
         {
             Coordinate[] shipCords = new Coordinate[3];
             Coordinate[][] possibleCords = ManualDestroyerCords(start);
             Coordinate[] coordinates = FindChoosen(possibleCords, direction, 3);
-            bool didCollide = CollisionCheck(shipCords, allShips, ships);
-            if (!didCollide)
-            {
+            //bool didCollide = CollisionCheck(shipCords, allShips);
+            //if (!didCollide)
+            //{
                 shipCords[0] = coordinates[0];
                 shipCords[1] = coordinates[1];
                 shipCords[2] = coordinates[2];
-            }
+            //}
             return shipCords;
         }
 
@@ -51,16 +51,16 @@ namespace BattleShips.Customs
             return ManualHunter(start, direction);
         }
 
-        public Coordinate[] Hunter(Coordinate start, Coordinate direction, Coordinate[] allShips, int ships)
+        public Coordinate[] Hunter(Coordinate start, Coordinate direction, Coordinate[] allShips)
         {
             Coordinate[] shipCords = new Coordinate[2];
             Coordinate[][] possibleCords = ManualHunterCords(start);
             Coordinate[] coordinates = FindChoosen(possibleCords, direction, 2);
-            if (!CollisionCheck(shipCords, allShips, ships))
-            {
+            //if (!CollisionCheck(shipCords, allShips))
+            //{
                 shipCords[0] = coordinates[0];
                 shipCords[1] = coordinates[1];
-            }
+            //}
             return shipCords;
         }
 
@@ -94,7 +94,7 @@ namespace BattleShips.Customs
             return cords;
         }
 
-        public static bool CollisionCheck(Coordinate[] coordinates, Coordinate[] shipCords, int ships)
+        public bool CollisionCheck(Coordinate[] coordinates, Coordinate[] shipCords)
         {
             bool didCollide = false;
             for (int i = 0; i < coordinates.Length; i++)
