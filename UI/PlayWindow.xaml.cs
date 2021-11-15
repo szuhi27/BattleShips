@@ -286,9 +286,9 @@ namespace BattleShips.UI
             ManualSetupB.Visibility = Visibility.Hidden;
         }
 
-        private void ManualReset(int shipNum)
+        private void ManualReset(int shipNum, string message)
         {
-            MessageBox.Show("Wrong coordinates!");
+            MessageBox.Show(message);
             manualChoosen = 0;
             if (currentPlayer == "p1")
             {
@@ -329,135 +329,158 @@ namespace BattleShips.UI
 
         private void PlaceCarrier()
         {
-            if (manualPlacer.CarrPlaceCheck(manualCords[0], manualCords[1]))
+            if (!manualCords[0].Equals(manualCords[1]))
             {
-                if (currentPlayer == "p1")
+                if (manualPlacer.CarrPlaceCheck(manualCords[0], manualCords[1]))
                 {
-                    Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
-                    if(!carrCords[0].Equals(new Customs.Coordinate()))
+                    if (currentPlayer == "p1")
                     {
-                        p1Ships[0] = carrCords[0];
-                        p1Ships[1] = carrCords[1];
-                        p1Ships[2] = carrCords[2];
-                        p1Ships[3] = carrCords[3];
-                        SetP1Ships(4);
-                        manualChoosen = 0;
-                        shipsPlaced++;
+                        Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
+                        if (!carrCords[0].Equals(new Customs.Coordinate()))
+                        {
+                            p1Ships[0] = carrCords[0];
+                            p1Ships[1] = carrCords[1];
+                            p1Ships[2] = carrCords[2];
+                            p1Ships[3] = carrCords[3];
+                            SetP1Ships(4);
+                            manualChoosen = 0;
+                            shipsPlaced++;
+                        }
+                        else
+                        {
+                            ManualReset(0, "Collision with existing ship!");
+                        }
                     }
                     else
                     {
-                        ManualReset(0);
+                        Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
+                        if (!carrCords[0].Equals(new Customs.Coordinate()))
+                        {
+                            p2Ships[0] = carrCords[0];
+                            p2Ships[1] = carrCords[1];
+                            p2Ships[2] = carrCords[2];
+                            p2Ships[3] = carrCords[3];
+                            SetAiShips(4);
+                            manualChoosen = 0;
+                            shipsPlaced++;
+                        }
+                        else
+                        {
+                            ManualReset(0, "Collision with existing ship!");
+                        }
                     }
                 }
                 else
                 {
-                    Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
-                    if (!carrCords[0].Equals(new Customs.Coordinate()))
-                    {
-                        p2Ships[0] = carrCords[0];
-                        p2Ships[1] = carrCords[1];
-                        p2Ships[2] = carrCords[2];
-                        p2Ships[3] = carrCords[3];
-                        SetAiShips(4);
-                        manualChoosen=0;
-                        shipsPlaced++;
-                    }
-                    else
-                    {
-                        ManualReset(0);
-                    }
+                    ManualReset(0, "Wrong coordinates");
                 }
             }
             else
             {
-                ManualReset(0);
+                ManualReset(0, "Give separate coordinates!");
             }
+            
         }
 
         private void PlaceDestr(int shipNum)
         {
-            if (manualPlacer.DestrPlaceCheck(manualCords[0], manualCords[1]))
+            if (!manualCords[0].Equals(manualCords[1]))
             {
-                if (currentPlayer == "p1")
+                if (manualPlacer.DestrPlaceCheck(manualCords[0], manualCords[1]))
                 {
-                    Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1],p1Ships);
-                    if(!manualPlacer.CollisionCheck(coordinates,p1Ships))
+                    if (currentPlayer == "p1")
                     {
-                        p1Ships[shipNum] = coordinates[0];
-                        p1Ships[shipNum+1] = coordinates[1];
-                        p1Ships[shipNum+2] = coordinates[2];
-                        SetP1Ships(shipNum+3);
-                        manualChoosen = 0;
-                        shipsPlaced++;
+                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p1Ships);
+                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
+                        {
+                            p1Ships[shipNum] = coordinates[0];
+                            p1Ships[shipNum + 1] = coordinates[1];
+                            p1Ships[shipNum + 2] = coordinates[2];
+                            SetP1Ships(shipNum + 3);
+                            manualChoosen = 0;
+                            shipsPlaced++;
+                        }
+                        else
+                        {
+                            ManualReset(shipNum, "Collision with existing ship!");
+                        }
                     }
                     else
                     {
-                        ManualReset(shipNum);
+                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p2Ships);
+                        if (!coordinates[0].Equals(new Customs.Coordinate()))
+                        {
+                            p2Ships[shipNum] = coordinates[0];
+                            p2Ships[shipNum + 1] = coordinates[1];
+                            p2Ships[shipNum + 2] = coordinates[2];
+                            SetAiShips(shipNum + 3);
+                            manualChoosen = 0;
+                            shipsPlaced++;
+                        }
+                        else
+                        {
+                            ManualReset(shipNum, "Collision with existing ship!");
+                        }
                     }
                 }
                 else
                 {
-                    Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p2Ships);
-                    if (!coordinates[0].Equals(new Customs.Coordinate()))
-                    {
-                        p2Ships[shipNum] = coordinates[0];
-                        p2Ships[shipNum+1] = coordinates[1];
-                        p2Ships[shipNum+2] = coordinates[2];
-                        SetAiShips(shipNum+3);
-                        manualChoosen = 0;
-                        shipsPlaced++;
-                    }
-                    else
-                    {
-                        ManualReset(shipNum);
-                    }
+                    ManualReset(shipNum, "Wrong coordinates");
                 }
             }
             else
             {
-                ManualReset(shipNum);
+                ManualReset(shipNum, "Give separate coordinates!");
             }
+            
         }
 
         private void PlaceHunter()
         {
-            if (manualPlacer.HuntPlaceCheck(manualCords[0], manualCords[1]))
+            if (!manualCords[0].Equals(manualCords[1]))
             {
-                if (currentPlayer == "p1")
+                if (manualPlacer.HuntPlaceCheck(manualCords[0], manualCords[1]))
                 {
-                    Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p1Ships);
-                    if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
+                    if (currentPlayer == "p1")
                     {
-                        p1Ships[10] = coordinates[0];
-                        p1Ships[11] = coordinates[1];
-                        ManualSetupFinish();
-                        shipsPlaced++;
+                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p1Ships);
+                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
+                        {
+                            p1Ships[10] = coordinates[0];
+                            p1Ships[11] = coordinates[1];
+                            ManualSetupFinish();
+                            shipsPlaced++;
+                        }
+                        else
+                        {
+                            ManualReset(10, "Collision with existing ship!");
+                        }
                     }
                     else
                     {
-                        ManualReset(10);
+                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p2Ships);
+                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
+                        {
+                            p2Ships[10] = coordinates[0];
+                            p2Ships[11] = coordinates[1];
+                            ManualSetupFinish();
+                            shipsPlaced++;
+                        }
+                        else
+                        {
+                            ManualReset(10, "Collision with existing ship!");
+                        }
                     }
                 }
                 else
                 {
-                    Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p2Ships);
-                    if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
-                    {
-                        p2Ships[10] = coordinates[0];
-                        p2Ships[11] = coordinates[1];
-                        ManualSetupFinish();
-                        shipsPlaced++;
-                    }
-                    else
-                    {
-                        ManualReset(10);
-                    }
+                    ManualReset(10, "Wrong coordinates");
                 }
             }
             else
             {
-                ManualReset(10);
-            }
+                ManualReset(10, "Give separate coordinates!");
+            } 
         }
         
         private void ManualSetupFinish()
