@@ -200,6 +200,7 @@ namespace BattleShips.UI
                     }
                     else if (startingPlayer == "p2")
                     {
+                        currentPlayer = "p2";
                         ShipSetupReset();
                         P2Fog.Visibility = Visibility.Hidden;
                     }
@@ -220,6 +221,7 @@ namespace BattleShips.UI
                     }
                     else if (startingPlayer == "p1")
                     {
+                        currentPlayer = "p1";
                         ShipSetupReset();
                         P1Fog.Visibility = Visibility.Hidden;
                     }
@@ -507,6 +509,7 @@ namespace BattleShips.UI
                     }
                     else if (startingPlayer == "p2")
                     {
+                        currentPlayer = "p2";
                         ShipSetupReset();
                         P1Fog.Visibility = Visibility.Visible;
                         P2Fog.Visibility = Visibility.Hidden;
@@ -536,6 +539,7 @@ namespace BattleShips.UI
                     }
                     else if (startingPlayer == "p1")
                     {
+                        currentPlayer = "p1";
                         ShipSetupReset();
                         P1Fog.Visibility = Visibility.Hidden;
                         P2Fog.Visibility = Visibility.Visible;
@@ -549,7 +553,7 @@ namespace BattleShips.UI
 
         private void P1AttackClick(object sender, RoutedEventArgs e)
         {
-            if(currentPlayer == "p1")
+            if(currentPlayer == "p1" && !gameEnded)
             {
                 Button? button = sender as Button;
                 string[] cordsS = button.Content.ToString().Split('_');
@@ -606,9 +610,59 @@ namespace BattleShips.UI
 
         private void P2AttackClick(object sender, RoutedEventArgs e)
         {
-            if (currentPlayer == "p2")
+            if (currentPlayer == "p2" && !gameEnded)
             {
-                
+                Button? button = sender as Button;
+                string[] cordsS = button.Content.ToString().Split('_');
+                Customs.Coordinate coordinate = new();
+                coordinate.R = Int32.Parse(cordsS[0]);
+                coordinate.C = Int32.Parse(cordsS[1]);
+                if (!shootChecker.ShotMatch(coordinate, p2Shots))
+                {
+                    p2Shots[p2ShotNum++] = coordinate;
+                    Button? enemyB = (Button)P1Own.FindName("P1Field_" + coordinate.R + "_" + coordinate.C);
+                    bool hit = shootChecker.ShotMatch(coordinate, p1Ships);
+                    if (hit)
+                    {
+                        p2Hits[p2HitsNum++] = coordinate;
+                        button.Background = new SolidColorBrush(Colors.Red);
+                        enemyB.Background = new SolidColorBrush(Colors.Red);
+                        string ship = "Hit";
+                        if (p2HitsNum == 12)
+                        {
+                            gameEnded = true;
+                            ship = "Win";
+                        }
+                        else if (p2HitsNum > 3)
+                        {
+                            ship = shootChecker.HitCheck(coordinate, p2Hits, p1Ships);
+                        }
+                        ShotMessage(ship);
+                    }
+                    else
+                    {
+                        button.Background = new SolidColorBrush(Colors.White);
+                        enemyB.Background = new SolidColorBrush(Colors.White);
+                        ShotMessage("Miss");
+                    }
+                    if (!gameEnded)
+                    {
+                        currentPlayer = "p1";
+                        if (gameSave.gameMode == "PvP")
+                        {
+                            P2Fog.Visibility = Visibility.Visible;
+                            P1Fog.Visibility = Visibility.Hidden;
+                        }
+                    }
+                    else
+                    {
+                        GameEnded(currentPlayer);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("You already shot there!");
+                }
             }
         }
 

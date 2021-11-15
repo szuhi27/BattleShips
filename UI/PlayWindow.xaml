@@ -218,8 +218,8 @@
             </StackPanel>
         </GroupBox>
         <Label x:Name="TopLabel" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Round 0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="168" Width="780" FontFamily="Stencil" FontSize="72"/>
-        <Image x:Name="P1Fog" Margin="5,149,0,375" Source="/Images/Fog.png" Stretch="Fill" Visibility="Hidden"/>
-        <Image x:Name="P2Fog" Margin="-5,540,0,-16" Source="/Images/Fog.png" Stretch="Fill" Visibility="Hidden"/>
+        <Image x:Name="P1Fog" Margin="5,149,0,375" Source="/Images/Fog.png" Stretch="Fill"/>
+        <Image x:Name="P2Fog" Margin="-5,540,0,-16" Source="/Images/Fog.png" Stretch="Fill"/>
 
         <Button x:Name="PvAIB" Content="P vs Ai" HorizontalAlignment="Left" Margin="247,305,0,0" VerticalAlignment="Top" Height="130" Width="322" FontFamily="Stencil" FontSize="48" Click="PvAIB_Click" Background="#FF6498FF" Visibility="Hidden"/>
         <Button x:Name="PvPB" Content="P vs P" HorizontalAlignment="Left" Margin="247,695,0,0" VerticalAlignment="Top" Height="130" Width="322" Background="#FF6498FF" FontFamily="Stencil" FontSize="48" Click="PvPB_Click" Visibility="Hidden"/>
