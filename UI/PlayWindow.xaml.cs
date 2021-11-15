@@ -25,7 +25,7 @@ namespace BattleShips.UI
             manualCords = new Customs.Coordinate[2], p1Shots = new Customs.Coordinate[36], p2Shots = new Customs.Coordinate[36],
             p1Hits = new Customs.Coordinate[12], p2Hits = new Customs.Coordinate[12];
 
-        private bool aiShipsCreated, p1ShipsCreated;
+        private bool aiShipsCreated, p1ShipsCreated, gameEnded;
         private string currentPlayer, startingPlayer;
         private int manualChoosen, shipsPlaced, p1HitsNum, p2HitsNum, p1ShotNum, p2ShotNum;
 
@@ -37,6 +37,7 @@ namespace BattleShips.UI
             PvPB.Visibility = Visibility.Visible;
             aiShipsCreated = false;
             p1ShipsCreated = false;
+            gameEnded = false;
             currentPlayer = "p1";
             startingPlayer = "";
             manualChoosen = 0;
@@ -565,8 +566,16 @@ namespace BattleShips.UI
                         p1Hits[p1HitsNum++] = coordinate;
                         button.Background = new SolidColorBrush(Colors.Red);
                         enemyB.Background = new SolidColorBrush(Colors.Red);
-                        //string ship = shootChecker.HitCheck(coordinate, p1Hits, p2Ships);
-                        ShotMessage("");
+                        string ship = "Hit";
+                        if (p1HitsNum == 12)
+                        {
+                            gameEnded = true;
+                            ship = "Win";
+                        }
+                        else if (p1HitsNum > 3) {
+                            ship = shootChecker.HitCheck(coordinate ,p1Hits, p2Ships); 
+                        }
+                        ShotMessage(ship);
                     }
                     else
                     {
@@ -574,12 +583,19 @@ namespace BattleShips.UI
                         enemyB.Background = new SolidColorBrush(Colors.White);
                         ShotMessage("Miss");
                     }
-                    //currentPlayer = "p2";
-                    /*if(gameSave.gameMode == "PvP")
+                    if (!gameEnded)
                     {
-                        P1Fog.Visibility = Visibility.Visible;
-                        P2Fog.Visibility = Visibility.Hidden;
-                    }       */
+                        currentPlayer = "p2";
+                        if (gameSave.gameMode == "PvP")
+                        {
+                            P1Fog.Visibility = Visibility.Visible;
+                            P2Fog.Visibility = Visibility.Hidden;
+                        }
+                    }
+                    else
+                    {
+                        GameEnded(currentPlayer);
+                    }
                 }
                 else
                 {
@@ -588,18 +604,26 @@ namespace BattleShips.UI
             }
         }
 
+        private void P2AttackClick(object sender, RoutedEventArgs e)
+        {
+            if (currentPlayer == "p2")
+            {
+                
+            }
+        }
+
         private void ShotMessage(string message)
         {
             switch (message)
             {
                 case "Carrier":
-                    MessageBox.Show("Hit, Carrier sunk!");
+                    MessageBox.Show("Hit, Carrier sank!");
                     break;
                 case "Destroyer":
-                    MessageBox.Show("Hir, Destroyer sunk!");
+                    MessageBox.Show("Hit, Destroyer sank!");
                     break;
                 case "Hunter":
-                    MessageBox.Show("Hit, Hunter shunk!");
+                    MessageBox.Show("Hit, Hunter sank!");
                     break;
                 case "Hit":
                     MessageBox.Show("Hit!");
@@ -607,27 +631,18 @@ namespace BattleShips.UI
                 case "Miss":
                     MessageBox.Show("Miss!");
                     break;
+                case "Win":
+                    MessageBox.Show("All ships destroyed, you won!");
+                    break;
                 default:
                     MessageBox.Show("Shot!");
                     break;
             }
         }
 
-        private void P2AttackClick(object sender, RoutedEventArgs e)
+        private void GameEnded(string currentPlayer)
         {
-            if(currentPlayer == "p2")
-            {
-
-            }
-            if (!aiShipsCreated)
-            {
-                Button? button = sender as Button;
-                var coordinates = button.Content.ToString();
-                Button? enemyB = (Button)P2Own.FindName("P1Field_" + coordinates);
-                enemyB.Background = new SolidColorBrush(Colors.Black);
-            }
+            
         }
-
-
     }
 }
