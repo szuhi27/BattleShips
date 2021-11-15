@@ -16,15 +16,18 @@ namespace BattleShips.UI
 {
     public partial class PlayWindow : Window
     {
-        private Customs.AiBehav aiBehav = new Customs.AiBehav();
-        private Customs.ManualPlacer manualPlacer = new Customs.ManualPlacer();
-
+        private Customs.AiBehav aiBehav = new();
+        private Customs.ManualPlacer manualPlacer = new();
+        private Customs.ShootChecker shootChecker = new();
+  
         private Customs.GameSave gameSave = new();
         private Customs.Coordinate[] p1Ships = new Customs.Coordinate[12], p2Ships = new Customs.Coordinate[12],
-            manualCords = new Customs.Coordinate[2];
+            manualCords = new Customs.Coordinate[2], p1Shots = new Customs.Coordinate[36], p2Shots = new Customs.Coordinate[36],
+            p1Hits = new Customs.Coordinate[12], p2Hits = new Customs.Coordinate[12];
+
         private bool aiShipsCreated, p1ShipsCreated;
         private string currentPlayer, startingPlayer;
-        private int manualChoosen, shipsPlaced;
+        private int manualChoosen, shipsPlaced, p1HitsNum, p2HitsNum, p1ShotNum, p2ShotNum;
 
         public PlayWindow()
         {
@@ -37,6 +40,11 @@ namespace BattleShips.UI
             currentPlayer = "p1";
             startingPlayer = "";
             manualChoosen = 0;
+            shipsPlaced = 0;
+            p1HitsNum = 0;
+            p2HitsNum = 0;
+            p1ShotNum = 0;
+            p2ShotNum = 0;
         }
 
         private void PlayW_Closed(object sender, EventArgs e)
@@ -88,23 +96,21 @@ namespace BattleShips.UI
         {
             PvAIB.Visibility = Visibility.Collapsed;
             PvPB.Visibility = Visibility.Collapsed;
+            P1NameTB.Visibility = Visibility.Visible;
+            P1SaveB.Visibility = Visibility.Visible;
         }
 
         private void PvAIB_Click(object sender, RoutedEventArgs e)
         {
-            GameStart();
             gameSave.gameMode = "PvAi";
             gameSave.player2 = "Ai";
-            P1NameTB.Visibility = Visibility.Visible;
-            P1SaveB.Visibility = Visibility.Visible;
+            GameStart();
         }
 
         private void PvPB_Click(object sender, RoutedEventArgs e)
         {
-            GameStart();
             gameSave.gameMode = "PvP";
-            P1NameTB.Visibility = Visibility.Visible;
-            P1SaveB.Visibility = Visibility.Visible;
+            GameStart();
         }
 
         private void SaveP1_Click(object sender, RoutedEventArgs e)
@@ -133,28 +139,25 @@ namespace BattleShips.UI
 
         private void ChooseStarterAi()
         {
-            p2Ships = aiBehav.GenerateShips();
+            Customs.Coordinate[] aiGenerated = aiBehav.GenerateShipsAi();
+            p2Ships = aiGenerated;
             SetAiShips(12);
             var rand = new Random();
             int num = rand.Next(0, 2);
             if (num == 0)
             {
-                MessageBox.Show("You start the game!");
-                TopLabel.Content = gameSave.player1+" coose ship\nplacement mode!";
-                AutoSetupB.Visibility = Visibility.Visible;
-                ManualSetupB.Visibility = Visibility.Visible;
-                currentPlayer = "p1";
                 startingPlayer = "p1";
+                MessageBox.Show("You start the game!");
             }
             else
             {
-                MessageBox.Show("The Ai starts the game!");
-                TopLabel.Content = gameSave.player1 + " coose ship\nplacement mode!";
-                AutoSetupB.Visibility = Visibility.Visible;
-                ManualSetupB.Visibility = Visibility.Visible;
-                currentPlayer = "p1";
                 startingPlayer = "p2";
+                MessageBox.Show("The Ai starts the game!");
             }
+            currentPlayer = "p1";
+            TopLabel.Content = gameSave.player1 + " coose ship\nplacement mode!";
+            AutoSetupB.Visibility = Visibility.Visible;
+            ManualSetupB.Visibility = Visibility.Visible;
         }
 
         private void ChooseStarterPvP()
@@ -181,66 +184,46 @@ namespace BattleShips.UI
             }
         }
 
-        private void SetP1Ships(int ships)
-        {
-            for (int i = 0; i < ships; i++)
-            {
-                Button button = (Button)P1Own.FindName("P1Field_" + p1Ships[i].R + "_" + p1Ships[i].C);
-                button.Background = new SolidColorBrush(Colors.Black);
-            }
-            if (ships == 12)
-            {
-                p1ShipsCreated = true;
-            }
-        }
-
-        private void SetAiShips(int ships)
-        {
-            for (int i = 0; i < ships; i++)
-            {
-                Button button = (Button)P2Own.FindName("P2Field_" + p2Ships[i].R+"_"+p2Ships[i].C);
-                button.Background = new SolidColorBrush(Colors.Black);
-            }
-            if(ships == 12)
-            {
-                aiShipsCreated = true;
-            }     
-        }
-
         private void AutoSetup_Click(object sender, RoutedEventArgs e)
         {
-            switch(currentPlayer)
+            switch (currentPlayer)
             {
                 case "p1":
-                    p1Ships = aiBehav.GenerateShips();
+                    Customs.Coordinate[] p1Generated = aiBehav.GenerateShipsP1();
+                    p1Ships = p1Generated;
                     SetP1Ships(12);
-                    if(gameSave.gameMode == "PvAi")
+                    if (gameSave.gameMode == "PvAi")
                     {
                         ShipSetupReset();
                         P1Fog.Visibility = Visibility.Hidden;
-                    }else if(startingPlayer == "p2"){
+                    }
+                    else if (startingPlayer == "p2")
+                    {
                         ShipSetupReset();
                         P2Fog.Visibility = Visibility.Hidden;
-                    }else if(startingPlayer == "p1")
+                    }
+                    else if (startingPlayer == "p1")
                     {
                         currentPlayer = "p2";
                         TopLabel.Content = gameSave.player2 + " coose ship\nplacement mode!";
                     }
                     break;
                 case "p2":
-                    p2Ships = aiBehav.GenerateShips();
+                    Customs.Coordinate[] p2Generated = aiBehav.GenerateShipsAi();
+                    p2Ships = p2Generated;
                     SetAiShips(12);
-                    if(startingPlayer == "p2")
+                    if (startingPlayer == "p2")
                     {
                         currentPlayer = "p1";
                         TopLabel.Content = gameSave.player1 + " coose ship\nplacement mode!";
-                    }else if (startingPlayer == "p1")
+                    }
+                    else if (startingPlayer == "p1")
                     {
                         ShipSetupReset();
                         P1Fog.Visibility = Visibility.Hidden;
                     }
                     break;
-            }
+            }   
         }
 
         private void ManualSetup_Click(object sender, RoutedEventArgs e)
@@ -259,6 +242,32 @@ namespace BattleShips.UI
                     P2Fog.Visibility = Visibility.Hidden;
                     shipsPlaced = 0;
                     break;
+            }
+        }
+
+        private void SetP1Ships(int ships)
+        {
+            for (int i = 0; i < ships; i++)
+            {
+                Button button = (Button)P1Own.FindName("P1Field_" + p1Ships[i].R + "_" + p1Ships[i].C);
+                button.Background = new SolidColorBrush(Colors.Black);
+            }
+            if (ships == 12)
+            {
+                p1ShipsCreated = true;
+            }
+        }
+
+        private void SetAiShips(int ships)
+        {
+            for (int i = 0; i < ships; i++)
+            {
+                Button button = (Button)P2Own.FindName("P2Field_" + p2Ships[i].R + "_" + p2Ships[i].C);
+                button.Background = new SolidColorBrush(Colors.Black);
+            }
+            if (ships == 12)
+            {
+                aiShipsCreated = true;
             }
         }
 
@@ -539,14 +548,77 @@ namespace BattleShips.UI
 
         private void P1AttackClick(object sender, RoutedEventArgs e)
         {
-            Button? button = sender as Button;
-            var coordinates = button.Content.ToString();
-            Button? enemyB = (Button)P2Own.FindName("P2Field_" + coordinates);
-            enemyB.Background = new SolidColorBrush(Colors.Black);
+            if(currentPlayer == "p1")
+            {
+                Button? button = sender as Button;
+                string[] cordsS = button.Content.ToString().Split('_');
+                Customs.Coordinate coordinate = new();
+                coordinate.R = Int32.Parse(cordsS[0]);
+                coordinate.C = Int32.Parse(cordsS[1]);
+                if (!shootChecker.ShotMatch(coordinate, p1Shots))
+                {
+                    p1Shots[p1ShotNum++] = coordinate;
+                    Button? enemyB = (Button)P2Own.FindName("P2Field_" + coordinate.R + "_" + coordinate.C);
+                    bool hit = shootChecker.ShotMatch(coordinate, p2Ships);
+                    if (hit)
+                    {
+                        p1Hits[p1HitsNum++] = coordinate;
+                        button.Background = new SolidColorBrush(Colors.Red);
+                        enemyB.Background = new SolidColorBrush(Colors.Red);
+                        //string ship = shootChecker.HitCheck(coordinate, p1Hits, p2Ships);
+                        ShotMessage("");
+                    }
+                    else
+                    {
+                        button.Background = new SolidColorBrush(Colors.White);
+                        enemyB.Background = new SolidColorBrush(Colors.White);
+                        ShotMessage("Miss");
+                    }
+                    //currentPlayer = "p2";
+                    /*if(gameSave.gameMode == "PvP")
+                    {
+                        P1Fog.Visibility = Visibility.Visible;
+                        P2Fog.Visibility = Visibility.Hidden;
+                    }       */
+                }
+                else
+                {
+                    MessageBox.Show("You already shot there!");
+                }
+            }
+        }
+
+        private void ShotMessage(string message)
+        {
+            switch (message)
+            {
+                case "Carrier":
+                    MessageBox.Show("Hit, Carrier sunk!");
+                    break;
+                case "Destroyer":
+                    MessageBox.Show("Hir, Destroyer sunk!");
+                    break;
+                case "Hunter":
+                    MessageBox.Show("Hit, Hunter shunk!");
+                    break;
+                case "Hit":
+                    MessageBox.Show("Hit!");
+                    break;
+                case "Miss":
+                    MessageBox.Show("Miss!");
+                    break;
+                default:
+                    MessageBox.Show("Shot!");
+                    break;
+            }
         }
 
         private void P2AttackClick(object sender, RoutedEventArgs e)
         {
+            if(currentPlayer == "p2")
+            {
+
+            }
             if (!aiShipsCreated)
             {
                 Button? button = sender as Button;

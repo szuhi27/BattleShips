@@ -7,15 +7,23 @@ using System.Threading.Tasks;
 
 namespace BattleShips.Customs
 {
-    internal class AiBehav : ShipPlacer
+    internal class AiBehav
     {
+
+        private ShipPlacer shipPlacerAi = new();
+        private ShipPlacer shipPlacerP1 = new();
 
         private int shootNum;
         private Coordinate[] prevShots = new Coordinate[36], prevHits = new Coordinate[12]; 
         private Coordinate currentShoot, prevHit;
 
-        public Coordinate[] GenerateShips() {
-            return SetupShips();
+        public Coordinate[] GenerateShipsAi() {
+            return shipPlacerAi.SetupShips();
+        }
+
+        public Coordinate[] GenerateShipsP1()
+        {
+            return shipPlacerP1.SetupShips();
         }
 
         public Coordinate Attack()
