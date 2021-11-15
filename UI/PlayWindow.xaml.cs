@@ -65,17 +65,9 @@ namespace BattleShips.UI
             }
         }
 
-        private void P1AttackClick(object sender, RoutedEventArgs e)
-        {
-            Button? button = sender as Button;
-            var coordinates = button.Content.ToString();
-            Button? enemyB = (Button)P2Own.FindName("P2Field_"+coordinates);
-            enemyB.Background = new SolidColorBrush(Colors.Black);
-        }
-
         private void P2SetupClick(object sender, RoutedEventArgs e)
         {
-            if (!p1ShipsCreated && manualChoosen < 2)
+            if (!aiShipsCreated && manualChoosen < 2)
             {
                 Button? button = sender as Button;
                 string[] cordsS = button.Content.ToString().Split('_');
@@ -89,17 +81,6 @@ namespace BattleShips.UI
                 {
                     PlaceShip();
                 }
-            }
-        }
-
-        private void P2AttackClick(object sender, RoutedEventArgs e)
-        {
-            if (!aiShipsCreated)
-            {
-                Button? button = sender as Button;
-                var coordinates = button.Content.ToString();
-                Button? enemyB = (Button)P2Own.FindName("P1Field_" + coordinates);
-                enemyB.Background = new SolidColorBrush(Colors.Black);
             }
         }
 
@@ -200,6 +181,19 @@ namespace BattleShips.UI
             }
         }
 
+        private void SetP1Ships(int ships)
+        {
+            for (int i = 0; i < ships; i++)
+            {
+                Button button = (Button)P1Own.FindName("P1Field_" + p1Ships[i].R + "_" + p1Ships[i].C);
+                button.Background = new SolidColorBrush(Colors.Black);
+            }
+            if (ships == 12)
+            {
+                p1ShipsCreated = true;
+            }
+        }
+
         private void SetAiShips(int ships)
         {
             for (int i = 0; i < ships; i++)
@@ -211,19 +205,6 @@ namespace BattleShips.UI
             {
                 aiShipsCreated = true;
             }     
-        }
-
-        private void SetP1Ships(int ships)
-        {
-            for (int i = 0; i < ships; i++)
-            {
-                Button button = (Button)P1Own.FindName("P1Field_" + p1Ships[i].R + "_" + p1Ships[i].C);
-                button.Background = new SolidColorBrush(Colors.Black);
-            }
-            if(ships == 12)
-            {
-                p1ShipsCreated = true;
-            }
         }
 
         private void AutoSetup_Click(object sender, RoutedEventArgs e)
@@ -243,7 +224,7 @@ namespace BattleShips.UI
                     }else if(startingPlayer == "p1")
                     {
                         currentPlayer = "p2";
-                        TopLabel.Content = gameSave.player2 + "coose ship placement mode!";
+                        TopLabel.Content = gameSave.player2 + " coose ship\nplacement mode!";
                     }
                     break;
                 case "p2":
@@ -252,7 +233,7 @@ namespace BattleShips.UI
                     if(startingPlayer == "p2")
                     {
                         currentPlayer = "p1";
-                        TopLabel.Content = gameSave.player1 + "coose ship placement mode!";
+                        TopLabel.Content = gameSave.player1 + " coose ship\nplacement mode!";
                     }else if (startingPlayer == "p1")
                     {
                         ShipSetupReset();
@@ -270,11 +251,13 @@ namespace BattleShips.UI
                     ShipSetupReset();
                     TopLabel.Content = "Place Carrier(4)\n(first 2 places)";
                     P1Fog.Visibility = Visibility.Hidden;
+                    shipsPlaced = 0;
                     break;
                 case "p2":
                     ShipSetupReset();
                     TopLabel.Content = "Place Carrier(4)\n(first 2 places)";
                     P2Fog.Visibility = Visibility.Hidden;
+                    shipsPlaced = 0;
                     break;
             }
         }
@@ -345,13 +328,14 @@ namespace BattleShips.UI
                             SetP1Ships(4);
                             manualChoosen = 0;
                             shipsPlaced++;
+                            TopLabel.Content = "Place Destroyer(3)\n(first 2 places)";
                         }
                         else
                         {
                             ManualReset(0, "Collision with existing ship!");
                         }
                     }
-                    else
+                    else if (currentPlayer == "p2")
                     {
                         Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
                         if (!carrCords[0].Equals(new Customs.Coordinate()))
@@ -363,6 +347,7 @@ namespace BattleShips.UI
                             SetAiShips(4);
                             manualChoosen = 0;
                             shipsPlaced++;
+                            TopLabel.Content = "Place Destroyer(3)\n(first 2 places)";
                         }
                         else
                         {
@@ -390,8 +375,8 @@ namespace BattleShips.UI
                 {
                     if (currentPlayer == "p1")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p1Ships);
-                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
+                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
                         {
                             p1Ships[shipNum] = coordinates[0];
                             p1Ships[shipNum + 1] = coordinates[1];
@@ -399,16 +384,24 @@ namespace BattleShips.UI
                             SetP1Ships(shipNum + 3);
                             manualChoosen = 0;
                             shipsPlaced++;
+                            if(shipsPlaced == 2)
+                            {
+                                TopLabel.Content = "Place Destroyer(3)\n(first 2 places)";
+                            }
+                            else
+                            {
+                                TopLabel.Content = "Place Hunter(2)\n(both places)";
+                            }
                         }
                         else
                         {
                             ManualReset(shipNum, "Collision with existing ship!");
                         }
                     }
-                    else
+                    else if (currentPlayer == "p2")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1], p2Ships);
-                        if (!coordinates[0].Equals(new Customs.Coordinate()))
+                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p2Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
                         {
                             p2Ships[shipNum] = coordinates[0];
                             p2Ships[shipNum + 1] = coordinates[1];
@@ -416,6 +409,14 @@ namespace BattleShips.UI
                             SetAiShips(shipNum + 3);
                             manualChoosen = 0;
                             shipsPlaced++;
+                            if (shipsPlaced == 2)
+                            {
+                                TopLabel.Content = "Place Destroyer(3)\n(first 2 places)";
+                            }
+                            else
+                            {
+                                TopLabel.Content = "Place Hunter(2)\n(both places)";
+                            }
                         }
                         else
                         {
@@ -443,8 +444,8 @@ namespace BattleShips.UI
                 {
                     if (currentPlayer == "p1")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p1Ships);
-                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
+                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
                         {
                             p1Ships[10] = coordinates[0];
                             p1Ships[11] = coordinates[1];
@@ -456,10 +457,10 @@ namespace BattleShips.UI
                             ManualReset(10, "Collision with existing ship!");
                         }
                     }
-                    else
+                    else if (currentPlayer == "p2")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1], p2Ships);
-                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships))
+                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p2Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
                         {
                             p2Ships[10] = coordinates[0];
                             p2Ships[11] = coordinates[1];
@@ -497,16 +498,18 @@ namespace BattleShips.UI
                     else if (startingPlayer == "p2")
                     {
                         ShipSetupReset();
+                        P1Fog.Visibility = Visibility.Visible;
                         P2Fog.Visibility = Visibility.Hidden;
                     }
                     else if (startingPlayer == "p1")
                     {
                         P1Fog.Visibility= Visibility.Visible;
                         currentPlayer = "p2";
-                        TopLabel.Content = gameSave.player2 + "coose ship placement mode!";
-                        AutoSetupB.Visibility = Visibility.Hidden;
-                        ManualSetupB.Visibility = Visibility.Hidden;
+                        TopLabel.Content = gameSave.player2 + " coose ship\nplacement mode!";
+                        AutoSetupB.Visibility = Visibility.Visible;
+                        ManualSetupB.Visibility = Visibility.Visible;
                         manualChoosen = 0;
+                        shipsPlaced = 0;
                     }
                     break;
                 case "p2":
@@ -515,19 +518,44 @@ namespace BattleShips.UI
                     {
                         P2Fog.Visibility = Visibility.Visible;
                         currentPlayer = "p1";
-                        TopLabel.Content = gameSave.player2 + "coose ship placement mode!";
-                        AutoSetupB.Visibility = Visibility.Hidden;
-                        ManualSetupB.Visibility = Visibility.Hidden;
+                        TopLabel.Content = gameSave.player1 + " coose ship\nplacement mode!";
+                        AutoSetupB.Visibility = Visibility.Visible;
+                        ManualSetupB.Visibility = Visibility.Visible;
                         manualChoosen = 0;
+                        shipsPlaced = 0;
                     }
                     else if (startingPlayer == "p1")
                     {
                         ShipSetupReset();
                         P1Fog.Visibility = Visibility.Hidden;
+                        P2Fog.Visibility = Visibility.Visible;
                     }
                     break;
             }
         }
+
+        //END OF SETUP PHASE, START OF GAMEPLAY PHASE
+        //============================================
+
+        private void P1AttackClick(object sender, RoutedEventArgs e)
+        {
+            Button? button = sender as Button;
+            var coordinates = button.Content.ToString();
+            Button? enemyB = (Button)P2Own.FindName("P2Field_" + coordinates);
+            enemyB.Background = new SolidColorBrush(Colors.Black);
+        }
+
+        private void P2AttackClick(object sender, RoutedEventArgs e)
+        {
+            if (!aiShipsCreated)
+            {
+                Button? button = sender as Button;
+                var coordinates = button.Content.ToString();
+                Button? enemyB = (Button)P2Own.FindName("P1Field_" + coordinates);
+                enemyB.Background = new SolidColorBrush(Colors.Black);
+            }
+        }
+
 
     }
 }

@@ -31,18 +31,14 @@ namespace BattleShips.Customs
             return ManualDestroyer(start, direction);
         }
 
-        public Coordinate[] Destroyer(Coordinate start, Coordinate direction, Coordinate[] allShips)
+        public Coordinate[] Destroyer(Coordinate start, Coordinate direction)
         {
             Coordinate[] shipCords = new Coordinate[3];
             Coordinate[][] possibleCords = ManualDestroyerCords(start);
             Coordinate[] coordinates = FindChoosen(possibleCords, direction, 3);
-            //bool didCollide = CollisionCheck(shipCords, allShips);
-            //if (!didCollide)
-            //{
-                shipCords[0] = coordinates[0];
-                shipCords[1] = coordinates[1];
-                shipCords[2] = coordinates[2];
-            //}
+            shipCords[0] = coordinates[0];
+            shipCords[1] = coordinates[1];
+            shipCords[2] = coordinates[2];
             return shipCords;
         }
 
@@ -51,16 +47,13 @@ namespace BattleShips.Customs
             return ManualHunter(start, direction);
         }
 
-        public Coordinate[] Hunter(Coordinate start, Coordinate direction, Coordinate[] allShips)
+        public Coordinate[] Hunter(Coordinate start, Coordinate direction)
         {
             Coordinate[] shipCords = new Coordinate[2];
             Coordinate[][] possibleCords = ManualHunterCords(start);
             Coordinate[] coordinates = FindChoosen(possibleCords, direction, 2);
-            //if (!CollisionCheck(shipCords, allShips))
-            //{
-                shipCords[0] = coordinates[0];
-                shipCords[1] = coordinates[1];
-            //}
+            shipCords[0] = coordinates[0];
+            shipCords[1] = coordinates[1];
             return shipCords;
         }
 
@@ -83,10 +76,6 @@ namespace BattleShips.Customs
                         {
                             cords[k] = possibleCords[i][k];
                         }
-                        /*cords[0] = possibleCords[i][0];
-                        cords[1] = possibleCords[i][1];
-                        cords[2] = possibleCords[i][2];
-                        cords[3] = possibleCords[i][3];*/
                         break;
                     }
                 }
