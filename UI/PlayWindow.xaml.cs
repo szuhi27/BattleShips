@@ -51,6 +51,7 @@ namespace BattleShips.UI
             p2HitsNum = 0;
             p1ShotNum = 0;
             p2ShotNum = 0;
+            gameSave.rounds = 1;
         }
 
         private void PlayW_Closed(object sender, EventArgs e)
@@ -281,7 +282,7 @@ namespace BattleShips.UI
 
         private void ShipSetupReset()
         {
-            TopLabel.Content = "Round 1";
+            TopLabel.Content = "Round "+ gameSave.rounds;
             AutoSetupB.Visibility = Visibility.Hidden;
             ManualSetupB.Visibility = Visibility.Hidden;
         }
@@ -594,6 +595,11 @@ namespace BattleShips.UI
                     }
                     if (!gameEnded)
                     {
+                        if (startingPlayer == "p2")
+                        {
+                            gameSave.rounds++;
+                            TopLabel.Content = "Round " + gameSave.rounds;
+                        }
                         currentPlayer = "p2";
                         if (gameSave.gameMode == "PvP")
                         {
@@ -655,12 +661,14 @@ namespace BattleShips.UI
                     }
                     if (!gameEnded)
                     {
-                        currentPlayer = "p1";
-                        if (gameSave.gameMode == "PvP")
+                        if(startingPlayer == "p1")
                         {
-                            P2Fog.Visibility = Visibility.Visible;
-                            P1Fog.Visibility = Visibility.Hidden;
+                            gameSave.rounds++;
+                            TopLabel.Content = "Round " + gameSave.rounds;
                         }
+                        currentPlayer = "p1";
+                        P2Fog.Visibility = Visibility.Visible;
+                        P1Fog.Visibility = Visibility.Hidden;
                     }
                     else
                     {
