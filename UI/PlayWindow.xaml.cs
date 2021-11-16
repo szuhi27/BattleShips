@@ -11,6 +11,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace BattleShips.UI
 {
@@ -21,6 +25,7 @@ namespace BattleShips.UI
         private Customs.ShootChecker shootChecker = new();
   
         private Customs.GameSave gameSave = new();
+        private Customs.ListOfGameSaves listOfGameSaves = new();
         private Customs.Coordinate[] p1Ships = new Customs.Coordinate[12], p2Ships = new Customs.Coordinate[12],
             manualCords = new Customs.Coordinate[2], p1Shots = new Customs.Coordinate[36], p2Shots = new Customs.Coordinate[36],
             p1Hits = new Customs.Coordinate[12], p2Hits = new Customs.Coordinate[12];
@@ -598,7 +603,10 @@ namespace BattleShips.UI
                     }
                     else
                     {
-                        GameEnded(currentPlayer);
+                        gameSave.winner = gameSave.player1;
+                        gameSave.p1Hits = p1HitsNum;
+                        gameSave.p2Hits = p2HitsNum;
+                        GameEnded();
                     }
                 }
                 else
@@ -656,7 +664,10 @@ namespace BattleShips.UI
                     }
                     else
                     {
-                        GameEnded(currentPlayer);
+                        gameSave.winner = gameSave.player2;
+                        gameSave.p1Hits = p1HitsNum;
+                        gameSave.p2Hits = p2HitsNum;
+                        GameEnded();
                     }
                 }
                 else
@@ -694,9 +705,39 @@ namespace BattleShips.UI
             }
         }
 
-        private void GameEnded(string currentPlayer)
+        private void GameEnded()
         {
+            Save();
+            P1Fog.Visibility = Visibility.Hidden;
+            P2Fog.Visibility = Visibility.Hidden;
+            TopLabel.Content = gameSave.winner + " won\nthe game!";
+            HomeB.Visibility = Visibility.Visible;
+        }
+
+        private void Save()
+        {
+            string path = @"GameSaves.json";
+            if (File.Exists(path))
+            {
+                string gameSaves = File.ReadAllText(@"GameSaves.json");
+                listOfGameSaves = JsonConvert.DeserializeObject<Customs.ListOfGameSaves>(gameSaves);
+                List<Customs.GameSave> gameSavesList = listOfGameSaves.listOfGameSaves.ToList();
+                gameSavesList.Add(gameSave);
+                listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
+                string newSave = JsonConvert.SerializeObject(listOfGameSaves);
+                File.WriteAllText(path, newSave);
+            }
+            else
+            {
+                List<Customs.GameSave> gameSavesList = new List<Customs.GameSave>();
+                gameSavesList.Add(gameSave);
+                listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
+                string newSave = JsonConvert.SerializeObject(listOfGameSaves);
+                File.WriteAllText(path, newSave);
+            }
             
         }
+
+        
     }
 }
