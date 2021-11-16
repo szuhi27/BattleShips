@@ -630,7 +630,14 @@ namespace BattleShips.UI
 
         private void AiAttack()
         {
-            aiShot = aiBehav.Attack(aiShot, p2Hits, p2Shots);
+            if(!aiShot.Equals(new Customs.Coordinate()))
+            {
+                aiShot = aiBehav.Attack(aiShot, p2Hits, p2Shots);
+            }
+            else
+            {
+                aiShot = aiBehav.Attack(new Customs.Coordinate(7,7), p2Hits, p2Shots);
+            }
             p2Shots[p2ShotNum++] = aiShot;
             Button? enemyB = (Button)P1Own.FindName("P1Field_" + aiShot.R + "_" + aiShot.C);
             if (shotChecker.ShotMatch(aiShot, p1Ships))
@@ -661,6 +668,7 @@ namespace BattleShips.UI
                 gameSave.winner = gameSave.player2;
                 gameSave.p1Hits = p1HitsNum;
                 gameSave.p2Hits = p2HitsNum;
+                GameEnded();
             }
         }
 
