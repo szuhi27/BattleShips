@@ -22,13 +22,14 @@ namespace BattleShips.UI
     {
         private Customs.AiBehav aiBehav = new();
         private Customs.ManualPlacer manualPlacer = new();
-        private Customs.ShootChecker shootChecker = new();
+        private Customs.ShootChecker shotChecker = new();
   
         private Customs.GameSave gameSave = new();
         private Customs.ListOfGameSaves listOfGameSaves = new();
         private Customs.Coordinate[] p1Ships = new Customs.Coordinate[12], p2Ships = new Customs.Coordinate[12],
             manualCords = new Customs.Coordinate[2], p1Shots = new Customs.Coordinate[36], p2Shots = new Customs.Coordinate[36],
             p1Hits = new Customs.Coordinate[12], p2Hits = new Customs.Coordinate[12];
+        private Customs.Coordinate aiShot = new();
 
         private bool aiShipsCreated, p1ShipsCreated, gameEnded;
         private string currentPlayer, startingPlayer;
@@ -51,6 +52,7 @@ namespace BattleShips.UI
             p2HitsNum = 0;
             p1ShotNum = 0;
             p2ShotNum = 0;
+            gameSave = new();
             gameSave.rounds = 1;
         }
 
@@ -566,11 +568,11 @@ namespace BattleShips.UI
                 Customs.Coordinate coordinate = new();
                 coordinate.R = Int32.Parse(cordsS[0]);
                 coordinate.C = Int32.Parse(cordsS[1]);
-                if (!shootChecker.ShotMatch(coordinate, p1Shots))
+                if (!shotChecker.ShotMatch(coordinate, p1Shots))
                 {
                     p1Shots[p1ShotNum++] = coordinate;
                     Button? enemyB = (Button)P2Own.FindName("P2Field_" + coordinate.R + "_" + coordinate.C);
-                    bool hit = shootChecker.ShotMatch(coordinate, p2Ships);
+                    bool hit = shotChecker.ShotMatch(coordinate, p2Ships);
                     if (hit)
                     {
                         p1Hits[p1HitsNum++] = coordinate;
@@ -583,7 +585,7 @@ namespace BattleShips.UI
                             ship = "Win";
                         }
                         else if (p1HitsNum > 3) {
-                            ship = shootChecker.HitCheck(coordinate ,p1Hits, p2Ships); 
+                            ship = shotChecker.HitCheck(coordinate ,p1Hits, p2Ships); 
                         }
                         ShotMessage(ship);
                     }
@@ -606,6 +608,10 @@ namespace BattleShips.UI
                             P1Fog.Visibility = Visibility.Visible;
                             P2Fog.Visibility = Visibility.Hidden;
                         }
+                        else
+                        {
+                            AiAttack();
+                        }
                     }
                     else
                     {
@@ -622,6 +628,42 @@ namespace BattleShips.UI
             }
         }
 
+        private void AiAttack()
+        {
+            aiShot = aiBehav.Attack(aiShot, p2Hits, p2Shots);
+            p2Shots[p2ShotNum++] = aiShot;
+            Button? enemyB = (Button)P1Own.FindName("P1Field_" + aiShot.R + "_" + aiShot.C);
+            if (shotChecker.ShotMatch(aiShot, p1Ships))
+            {
+                p2Hits[p2HitsNum++] = aiShot;
+                enemyB.Background = new SolidColorBrush(Colors.Red);
+                if(p2HitsNum == 12)
+                {
+                    gameEnded = true;
+                    ShotMessage("Win");
+                }
+            }
+            else
+            {
+                enemyB.Background = new SolidColorBrush(Colors.White);
+            }
+            if (!gameEnded)
+            {
+                if(startingPlayer == "p1")
+                {
+                    gameSave.rounds++;
+                    TopLabel.Content = "Round " + gameSave.rounds;
+                }
+                currentPlayer = "p1";
+            }
+            else
+            {
+                gameSave.winner = gameSave.player2;
+                gameSave.p1Hits = p1HitsNum;
+                gameSave.p2Hits = p2HitsNum;
+            }
+        }
+
         private void P2AttackClick(object sender, RoutedEventArgs e)
         {
             if (currentPlayer == "p2" && !gameEnded)
@@ -631,11 +673,11 @@ namespace BattleShips.UI
                 Customs.Coordinate coordinate = new();
                 coordinate.R = Int32.Parse(cordsS[0]);
                 coordinate.C = Int32.Parse(cordsS[1]);
-                if (!shootChecker.ShotMatch(coordinate, p2Shots))
+                if (!shotChecker.ShotMatch(coordinate, p2Shots))
                 {
                     p2Shots[p2ShotNum++] = coordinate;
                     Button? enemyB = (Button)P1Own.FindName("P1Field_" + coordinate.R + "_" + coordinate.C);
-                    bool hit = shootChecker.ShotMatch(coordinate, p1Ships);
+                    bool hit = shotChecker.ShotMatch(coordinate, p1Ships);
                     if (hit)
                     {
                         p2Hits[p2HitsNum++] = coordinate;
@@ -649,7 +691,7 @@ namespace BattleShips.UI
                         }
                         else if (p2HitsNum > 3)
                         {
-                            ship = shootChecker.HitCheck(coordinate, p2Hits, p1Ships);
+                            ship = shotChecker.HitCheck(coordinate, p2Hits, p1Ships);
                         }
                         ShotMessage(ship);
                     }
@@ -705,7 +747,14 @@ namespace BattleShips.UI
                     MessageBox.Show("Miss!");
                     break;
                 case "Win":
-                    MessageBox.Show("All ships destroyed, you won!");
+                    if(currentPlayer == "p1")
+                    {
+                        MessageBox.Show("All ships destroyed, " + gameSave.player1 + " won!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("All ships destroyed, " + gameSave.player2 + " won!");
+                    }    
                     break;
                 default:
                     MessageBox.Show("Shot!");

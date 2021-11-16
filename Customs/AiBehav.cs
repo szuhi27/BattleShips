@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace BattleShips.Customs
 {
-    internal class AiBehav
+    internal class AiBehav : ShootChecker
     {
 
         private ShipPlacer shipPlacerAi = new();
         private ShipPlacer shipPlacerP1 = new();
-
-        private int shootNum;
-        private Coordinate[] prevShots = new Coordinate[36], prevHits = new Coordinate[12]; 
-        private Coordinate currentShoot, prevHit;
 
         public Coordinate[] GenerateShipsAi() {
             return shipPlacerAi.SetupShips();
@@ -26,67 +22,43 @@ namespace BattleShips.Customs
             return shipPlacerP1.SetupShips();
         }
 
-        public Coordinate Attack()
+        //BORDER BETWEEN SETUP AND GAMEPLAY
+
+        public Coordinate Attack(Coordinate prev, Coordinate[] hits, Coordinate[] prevShots)
         {
-            currentShoot = new Coordinate(0,0);
-            if(prevHit.R == 0 && prevHit.C == 0)
-            {
-                RandomAttack();
-            }
+            Coordinate currentShot = new Coordinate(0,0);
+            //if(!ShotMatch(prev,hits))
+            //{
+                currentShot = RandomAttack(prevShots);
+            /*}
             else
             {
                 TargetedAttack();
-            }
-            prevShots[shootNum] = currentShoot;
-            shootNum++;
-            return currentShoot;
+            }*/
+            return currentShot;
         }
 
-        private void RandomAttack()
+        private bool PrevDidHit(Coordinate prev, Coordinate[] hits)
+        {
+            bool didHit = false;
+            return didHit;
+        }
+
+        private Coordinate RandomAttack(Coordinate[] previous)
         {
             Coordinate curr = new();
             Random random = new Random();
-            curr.R = random.Next(1,7);
-            curr.C = random.Next(1,7);
-            if (!AlreadyShot(curr))
+            do
             {
-                currentShoot = curr;
-            }
-            else
-            {
-                RandomAttack();
-            }
-
-
-        }
-
-        private bool AlreadyShot(Coordinate cord)
-        {
-            bool shotThere = false;
-            for(int i=0; i<37; i++)
-            {
-                if(prevShots[i].Equals(cord))
-                {
-                    shotThere = true;
-                    break;
-                }
-            } 
-            return shotThere;
+                curr.R = random.Next(1, 7);
+                curr.C = random.Next(1, 7);
+            }while(ShotMatch(curr, previous));
+            return curr;
         }
 
         private void TargetedAttack()
         {
             throw new NotImplementedException();
-        }
-
-        private void Save()
-        {
-            /*string path = ;
-            PlantLevels newpLvl = new PlantLevels { fieldLvl = 1, fieldReq = 50, gardenLvl = 1, gardenReq = 50, orchardLvl = 1, orcahrdReq = 50 };
-            string newLevelJson = JsonUtility.ToJson(newpLvl);
-            File.WriteAllText(linkXP, newLevelJson);*/
-            string str = File.ReadAllText(@"Resources");
-
         }
     }
 }

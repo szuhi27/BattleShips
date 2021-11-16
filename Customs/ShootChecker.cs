@@ -8,12 +8,12 @@ namespace BattleShips.Customs
 {
     internal class ShootChecker
     {
-        internal bool ShotMatch(Coordinate shot, Coordinate[] prevShots)
+        public bool ShotMatch(Coordinate coordinate, Coordinate[] coordArray)
         {
             bool match = false;
-            for (int i = 0; i < prevShots.Length; i++)
+            for (int i = 0; i < coordArray.Length; i++)
             {
-                if (shot.Equals(prevShots[i]))
+                if (coordinate.Equals(coordArray[i]))
                 {
                     match = true;
                     break;
@@ -22,7 +22,7 @@ namespace BattleShips.Customs
             return match;
         }
 
-        internal string HitCheck(Coordinate lastHit,Coordinate[] hits, Coordinate[] ships)
+        public string HitCheck(Coordinate lastHit,Coordinate[] hits, Coordinate[] ships)
         {
             string msg;
             if (CarrierCheck(hits,ships) && LastHitCheck(lastHit,ships,0,4))
