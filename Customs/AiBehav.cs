@@ -34,7 +34,7 @@ namespace BattleShips.Customs
             }
             else if (ShotMatch(prev, hits))
             {
-                currentShot = RandomAroundLastHit(prev, prevShots);
+                currentShot = RandomAroundLastHit(prev, prevShots, false);
             } else if(!ShotMatch(prev, hits) && HitAroundLastMiss(prev, hits))
             {
                 currentShot = RandomAroundLastMiss(prev, hits, prevShots);
@@ -80,17 +80,27 @@ namespace BattleShips.Customs
             return cordsAround;
         }
 
-        //TARGETED ATTACK ON HIT
-        private Coordinate RandomAroundLastHit(Coordinate prev, Coordinate[] prevShots)
+        private List<Coordinate> CoordsAroundExtended(Coordinate prev)
         {
-            List<Coordinate> goodCords = FindGoodCords(prev, prevShots);
+            List<Coordinate> coordsAE = new();
+            if (prev.R < 6 && prev.C < 6) { coordsAE.Add(new Coordinate(prev.R + 1, prev.C + 1)); }
+            if (prev.R > 1 && prev.C > 1) { coordsAE.Add(new Coordinate(prev.R - 1, prev.C - 1)); }
+            if (prev.C < 6 && prev.R > 1) { coordsAE.Add(new Coordinate(prev.R - 1, prev.C + 1)); }
+            if (prev.C > 1 && prev.R < 6) { coordsAE.Add(new Coordinate(prev.R + 1, prev.C - 1)); }
+            return coordsAE;
+        }
+
+        //TARGETED ATTACK ON HIT
+        private Coordinate RandomAroundLastHit(Coordinate prev, Coordinate[] prevShots, bool searchPrevHit)
+        {
+            List<Coordinate> coordsAround = CoordsAround(prev);
+            List<Coordinate> goodCords = FindGoodCords(prev, prevShots, searchPrevHit, coordsAround);
             return TargetedShot(goodCords, prevShots);
         }
 
-        private List<Coordinate> FindGoodCords(Coordinate prev, Coordinate[] prevShots)
+        private List<Coordinate> FindGoodCords(Coordinate prev, Coordinate[] prevShots, bool searchPrevHit, List<Coordinate> coordsAround)
         {
             List<Coordinate> goodCords = new List<Coordinate>();
-            List<Coordinate> coordsAround = CoordsAround(prev);
             for (int j = 0; j < coordsAround.Count; j++)
             {
                 if (!ShotMatch(coordsAround[j], prevShots))
@@ -99,8 +109,15 @@ namespace BattleShips.Customs
 
                 }
             }
+
+            if (goodCords.Count == 0 && searchPrevHit)
+            {
+                List<Coordinate> coordsAroundExtended = CoordsAroundExtended(prev);
+                goodCords = FindGoodCords(prev, prevShots, false, coordsAroundExtended);
+            }
             return goodCords;
         }
+
 
         private Coordinate TargetedShot(List<Coordinate> goodCoords, Coordinate[] prevShots)
         {
@@ -123,7 +140,7 @@ namespace BattleShips.Customs
             List<Coordinate> goodCords = FindHitCoords(prev, hits);
             Random random = new Random();
             Coordinate randomHit = goodCords[random.Next(0,goodCords.Count)];
-            return RandomAroundLastHit(randomHit,prevShots);
+            return RandomAroundLastHit(randomHit,prevShots, true);
         }
 
         private List<Coordinate> FindHitCoords(Coordinate prev, Coordinate[] prevHits)
