@@ -167,12 +167,15 @@ namespace BattleShips.UI
         {
             bool correct = false;
             string cleanName = name;
-            cleanName = cleanName.ToLower();
-            cleanName = Regex.Replace(cleanName,"[0-9]","");
-            cleanName = Regex.Replace(cleanName,"[a-z]","");
-            if(cleanName == "")
+            if (cleanName != "")
             {
-                correct = true;
+                cleanName = cleanName.ToLower();
+                cleanName = Regex.Replace(cleanName, "[0-9]", "");
+                cleanName = Regex.Replace(cleanName, "[a-z]", "");
+                if (cleanName == "")
+                {
+                    correct = true;
+                }
             }
             return correct;
         }
