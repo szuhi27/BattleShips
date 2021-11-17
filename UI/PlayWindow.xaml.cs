@@ -15,6 +15,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.IO;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace BattleShips.UI
 {
@@ -124,26 +125,56 @@ namespace BattleShips.UI
 
         private void SaveP1_Click(object sender, RoutedEventArgs e)
         {
-            gameSave.player1 = P1NameTB.Text;
-            P1NameTB.Visibility = Visibility.Hidden;
-            P1SaveB.Visibility = Visibility.Hidden;
-            if (gameSave.gameMode == "PvP")
+            if (GoodName(P1NameTB.Text))
             {
-                P2NameTB.Visibility = Visibility.Visible;
-                P2SaveB.Visibility = Visibility.Visible;
+                gameSave.player1 = P1NameTB.Text;
+                P1NameTB.Visibility = Visibility.Hidden;
+                P1SaveB.Visibility = Visibility.Hidden;
+                if (gameSave.gameMode == "PvP")
+                {
+                    P2NameTB.Visibility = Visibility.Visible;
+                    P2SaveB.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ChooseStarterAi();
+                }
             }
             else
             {
-                ChooseStarterAi();
+                MessageBox.Show("Enter only letters and/or numbers!");
+                P1NameTB.Text = "Name";
             }
         }
 
         private void SaveP2_Click(object sender, RoutedEventArgs e)
         {
-            gameSave.player2 = P2NameTB.Text;
-            P2NameTB.Visibility = Visibility.Hidden;
-            P2SaveB.Visibility = Visibility.Hidden;
-            ChooseStarterPvP();
+            if (GoodName(P2NameTB.Text))
+            {
+                gameSave.player2 = P2NameTB.Text;
+                P2NameTB.Visibility = Visibility.Hidden;
+                P2SaveB.Visibility = Visibility.Hidden;
+                ChooseStarterPvP();
+            }
+            else
+            {
+                MessageBox.Show("Enter only letters and/or numbers!");
+                P2NameTB.Text = "Name2";
+            }
+        }
+
+        private bool GoodName(string name)
+        {
+            bool correct = false;
+            string cleanName = name;
+            cleanName = cleanName.ToLower();
+            cleanName = Regex.Replace(cleanName,"[0-9]","");
+            cleanName = Regex.Replace(cleanName,"[a-z]","");
+            if(cleanName == "")
+            {
+                correct = true;
+            }
+            return correct;
         }
 
         private void ChooseStarterAi()

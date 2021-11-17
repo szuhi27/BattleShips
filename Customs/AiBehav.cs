@@ -24,6 +24,7 @@ namespace BattleShips.Customs
         }
 
         //BORDER BETWEEN SETUP AND GAMEPLAY
+        //=================================
 
         public Coordinate Attack(Coordinate prev, Coordinate[] hits, Coordinate[] prevShots)
         {
