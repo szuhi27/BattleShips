@@ -1,5 +1,8 @@
-﻿using System;
+﻿using BattleShips.Customs;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,6 +42,7 @@ namespace BattleShips
             PlayB.Visibility = Visibility.Hidden;
             HSB.Visibility = Visibility.Hidden;
             BSLabel.Visibility = Visibility.Hidden;
+            PopulateListBox();
         }
 
         private void BackB_Click(object sender, RoutedEventArgs e)
@@ -48,6 +52,43 @@ namespace BattleShips
             PlayB.Visibility = Visibility.Visible;
             HSB.Visibility = Visibility.Visible;
             BSLabel.Visibility = Visibility.Visible;
+        }
+
+        public void PopulateListBox()
+        {
+            List<Customs.GameSave> gameSaves = LoadGameSaves();
+            List<GroupBox> gameSavesString = GameSavesConvert(gameSaves);
+            HighScoresLB.ItemsSource = gameSavesString;
+        }
+
+        private List<Customs.GameSave> LoadGameSaves()
+        {
+            string path = @"GameSaves.json";
+            List<Customs.GameSave> gameSavesList = new();
+            if (File.Exists(path))
+            {
+                string gameSaves = File.ReadAllText(@"GameSaves.json");
+                Customs.ListOfGameSaves listOfGameSaves = new();
+                listOfGameSaves = JsonConvert.DeserializeObject<Customs.ListOfGameSaves>(gameSaves);
+                gameSavesList = listOfGameSaves.listOfGameSaves.ToList();
+            }
+            return gameSavesList;
+        }
+
+        private List<GroupBox> GameSavesConvert(List<GameSave> gs)
+        {
+            List<GroupBox> gsString = new List<GroupBox>();
+            for(int i = 0; i < gs.Count; i++)
+            {
+                scoresLB = new GroupBox();
+                scoresLB.Header = gs[i].winner;
+                string line = (gs[i].player1 + " vs. " + gs[i].player2 + " (" + 
+                    gs[i].p1Hits+ "-" + gs[i].p2Hits+") in "+ gs[i].rounds+" rounds");
+                scoresLB.Content = line;
+                scoresLB.Background = new SolidColorBrush(Color.FromRgb(125,200,255));     
+                gsString.Add(scoresLB);
+            }
+            return gsString;
         }
     }
 }

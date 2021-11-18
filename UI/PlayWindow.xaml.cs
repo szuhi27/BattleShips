@@ -838,5 +838,13 @@ namespace BattleShips.UI
                 }
             });
         }
+
+
+        private void HomeB_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow mainWindow = new MainWindow();
+            this.Visibility = Visibility.Collapsed;
+            mainWindow.Show();
+        }
     }
 }

@@ -229,7 +229,7 @@
         <Button x:Name="P2SaveB" Content="Save" HorizontalAlignment="Left" Margin="465,726,0,0" VerticalAlignment="Top" Height="68" Width="130" FontSize="36" FontFamily="Stencil" Background="#FF5990FF" Click="SaveP2_Click" Visibility="Hidden"/>
         <Button x:Name="AutoSetupB" Content="auto" HorizontalAlignment="Left" Margin="122,481,0,0" VerticalAlignment="Top" Height="109" Width="228" Click="AutoSetup_Click" Background="#FF6498FF" FontFamily="Stencil" FontSize="48" Visibility="Hidden"/>
         <Button x:Name="ManualSetupB" Content="manual" HorizontalAlignment="Left" Margin="416,481,0,0" VerticalAlignment="Top" Height="109" Width="228" Click="ManualSetup_Click" Background="#FF6498FF" FontFamily="Stencil" FontSize="48" Visibility="Hidden"/>
-        <Button x:Name="HomeB" Content="home" HorizontalAlignment="Left" Margin="302,545,0,0" VerticalAlignment="Top" Height="54" Width="212" FontFamily="Stencil" FontSize="48" Background="#FF35F1FF" Visibility="Hidden"/>
+        <Button x:Name="HomeB" Content="home" HorizontalAlignment="Left" Margin="302,545,0,0" VerticalAlignment="Top" Height="54" Width="212" FontFamily="Stencil" FontSize="48" Background="#FF35F1FF" Visibility="Hidden" Click="HomeB_Click"/>
 
 
 
