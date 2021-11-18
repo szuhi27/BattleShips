@@ -26,7 +26,6 @@ namespace BattleShips.UI
         private Customs.ShootChecker shotChecker = new();
   
         private Customs.GameSave gameSave = new();
-        private Customs.ListOfGameSaves listOfGameSaves = new();
         private Customs.Coordinate[] p1Ships = new Customs.Coordinate[12], p2Ships = new Customs.Coordinate[12],
             manualCords = new Customs.Coordinate[2], p1Shots = new Customs.Coordinate[36], p2Shots = new Customs.Coordinate[36],
             p1Hits = new Customs.Coordinate[12], p2Hits = new Customs.Coordinate[12];
@@ -329,19 +328,19 @@ namespace BattleShips.UI
             manualChoosen = 0;
             if (currentPlayer == "p1")
             {
+                SetP1Ships(shipNum);
                 Button? enemyB = (Button)P1Own.FindName("P1Field_" + manualCords[0].R + "_" + manualCords[0].C);
                 enemyB.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
                 Button? enemyB2 = (Button)P1Own.FindName("P1Field_" + manualCords[1].R + "_" + manualCords[1].C);
                 enemyB2.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
-                SetP1Ships(shipNum);
             }
             else
             {
+                SetAiShips(shipNum);
                 Button? enemyB = (Button)P2Own.FindName("P2Field_" + manualCords[0].R + "_" + manualCords[0].C);
                 enemyB.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
                 Button? enemyB2 = (Button)P2Own.FindName("P2Field_" + manualCords[1].R + "_" + manualCords[1].C);
                 enemyB2.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
-                SetAiShips(shipNum);
             }
         }
 
@@ -804,39 +803,40 @@ namespace BattleShips.UI
             }
         }
 
-        private void GameEnded()
+        private async void GameEnded()
         {
-            Save();
+            await Save();
             P1Fog.Visibility = Visibility.Hidden;
             P2Fog.Visibility = Visibility.Hidden;
             TopLabel.Content = gameSave.winner + " won\nthe game!";
             HomeB.Visibility = Visibility.Visible;
         }
 
-        private void Save()
+        private Task Save()
         {
-            string path = @"GameSaves.json";
-            if (File.Exists(path))
+            return Task.Factory.StartNew(() =>
             {
-                string gameSaves = File.ReadAllText(@"GameSaves.json");
-                listOfGameSaves = JsonConvert.DeserializeObject<Customs.ListOfGameSaves>(gameSaves);
-                List<Customs.GameSave> gameSavesList = listOfGameSaves.listOfGameSaves.ToList();
-                gameSavesList.Add(gameSave);
-                listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
-                string newSave = JsonConvert.SerializeObject(listOfGameSaves);
-                File.WriteAllText(path, newSave);
-            }
-            else
-            {
-                List<Customs.GameSave> gameSavesList = new List<Customs.GameSave>();
-                gameSavesList.Add(gameSave);
-                listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
-                string newSave = JsonConvert.SerializeObject(listOfGameSaves);
-                File.WriteAllText(path, newSave);
-            }
-            
+                string path = @"GameSaves.json";
+                Customs.ListOfGameSaves listOfGameSaves = new();
+                if (File.Exists(path))
+                {
+                    string gameSaves = File.ReadAllText(@"GameSaves.json");
+                    listOfGameSaves = JsonConvert.DeserializeObject<Customs.ListOfGameSaves>(gameSaves);
+                    List<Customs.GameSave> gameSavesList = listOfGameSaves.listOfGameSaves.ToList();
+                    gameSavesList.Add(gameSave);
+                    listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
+                    string newSave = JsonConvert.SerializeObject(listOfGameSaves);
+                    File.WriteAllText(path, newSave);
+                }
+                else
+                {
+                    List<Customs.GameSave> gameSavesList = new List<Customs.GameSave>();
+                    gameSavesList.Add(gameSave);
+                    listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
+                    string newSave = JsonConvert.SerializeObject(listOfGameSaves);
+                    File.WriteAllText(path, newSave);
+                }
+            });
         }
-
-        
     }
 }
