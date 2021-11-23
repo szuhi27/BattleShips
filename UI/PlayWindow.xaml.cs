@@ -34,7 +34,7 @@ namespace BattleShips.UI
 
         private bool aiShipsCreated, p1ShipsCreated, gameEnded;
         private string currentPlayer, startingPlayer;
-        private int manualChoosen, shipsPlaced, p1HitsNum, p2HitsNum, p1ShotNum, p2ShotNum;
+        private int manualChoosen, shipsPlaced, p1HitsNum, p2HitsNum, p1ShotNum, p2ShotNum, missesInaRow;
 
         public PlayWindow()
         {
@@ -55,6 +55,7 @@ namespace BattleShips.UI
             p2ShotNum = 0;
             gameSave = new();
             gameSave.rounds = 1;
+            missesInaRow = 0;
         }
 
         private void PlayW_Closed(object sender, EventArgs e)
@@ -666,16 +667,17 @@ namespace BattleShips.UI
         {
             if(!aiShot.Equals(new Coordinate()))
             {
-                aiShot = aiBehav.Attack(aiShot, p2Hits, p2Shots);
+                aiShot = aiBehav.Attack(aiShot, p2Hits, p2Shots, missesInaRow);
             }
             else
             {
-                aiShot = aiBehav.Attack(new Coordinate(7,7), p2Hits, p2Shots);
+                aiShot = aiBehav.Attack(new Coordinate(7,7), p2Hits, p2Shots, missesInaRow);
             }
             p2Shots[p2ShotNum++] = aiShot;
             Button? enemyB = (Button)P1Own.FindName("P1Field_" + aiShot.R + "_" + aiShot.C);
             if (shotChecker.ShotMatch(aiShot, p1Ships))
             {
+                missesInaRow = 0;
                 p2Hits[p2HitsNum++] = aiShot;
                 enemyB.Background = new SolidColorBrush(Colors.Red);
                 if(p2HitsNum == 12)
@@ -686,6 +688,7 @@ namespace BattleShips.UI
             }
             else
             {
+                missesInaRow++;
                 enemyB.Background = new SolidColorBrush(Colors.White);
             }
             if (!gameEnded)

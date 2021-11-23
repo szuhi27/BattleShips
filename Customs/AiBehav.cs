@@ -26,10 +26,10 @@ namespace BattleShips.Customs
         //BORDER BETWEEN SETUP AND GAMEPLAY
         //=================================
 
-        public Coordinate Attack(Coordinate prev, Coordinate[] hits, Coordinate[] prevShots)
+        public Coordinate Attack(Coordinate prev, Coordinate[] hits, Coordinate[] prevShots, int misses)
         {
             Coordinate currentShot = new(0,0);
-            if (!ShotMatch(prev, hits) && !HitAroundLastMiss(prev, hits))
+            if ((!ShotMatch(prev, hits) && !HitAroundLastMiss(prev, hits)) || misses > 2)
             {
                 currentShot = RandomAttack(prevShots);
             }
@@ -81,7 +81,7 @@ namespace BattleShips.Customs
             return cordsAround;
         }
 
-        private List<Coordinate> CoordsAroundExtended(Coordinate prev)
+        public List<Coordinate> CoordsAroundExtended(Coordinate prev)
         {
             List<Coordinate> coordsAE = new();
             if (prev.R < 6 && prev.C < 6) { coordsAE.Add(new Coordinate(prev.R + 1, prev.C + 1)); }

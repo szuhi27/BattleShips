@@ -28,7 +28,7 @@ namespace BattleShips.Tests
 
             List<Coordinate> testList = aibehav.CoordsAround(input);
 
-            Assert.AreEqual(exp, testList);
+            Assert.AreEqual(testList,exp);
 
         }
 
@@ -45,7 +45,7 @@ namespace BattleShips.Tests
 
             var aibehav = new AiBehav();
 
-            List<Coordinate> testList = aibehav.CoordsAround(input);
+            List<Coordinate> testList = aibehav.CoordsAroundExtended(input);
 
             Assert.AreEqual(exp, testList);
 
