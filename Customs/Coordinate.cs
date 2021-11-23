@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BattleShips.Customs
 {
-    struct Coordinate
+    public struct Coordinate
     {
     
         public int R { get; set; }
