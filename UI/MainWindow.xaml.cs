@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BattleShips
+namespace BattleShips.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

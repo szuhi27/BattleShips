@@ -71,7 +71,7 @@ namespace BattleShips.Customs
             return curr;
         }
 
-        private List<Coordinate> CoordsAround(Coordinate prev)
+        public List<Coordinate> CoordsAround(Coordinate prev)
         {
             List<Coordinate> cordsAround = new();
             if (prev.R < 6) { cordsAround.Add(new Coordinate(prev.R + 1, prev.C)); }

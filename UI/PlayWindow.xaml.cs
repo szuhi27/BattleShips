@@ -16,20 +16,21 @@ using System.Text.Json.Serialization;
 using System.IO;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using BattleShips.Customs;
 
 namespace BattleShips.UI
 {
     public partial class PlayWindow : Window
     {
-        private Customs.AiBehav aiBehav = new();
-        private Customs.ManualPlacer manualPlacer = new();
-        private Customs.ShootChecker shotChecker = new();
+        private AiBehav aiBehav = new();
+        private ManualPlacer manualPlacer = new();
+        private ShootChecker shotChecker = new();
   
-        private Customs.GameSave gameSave = new();
-        private Customs.Coordinate[] p1Ships = new Customs.Coordinate[12], p2Ships = new Customs.Coordinate[12],
-            manualCords = new Customs.Coordinate[2], p1Shots = new Customs.Coordinate[36], p2Shots = new Customs.Coordinate[36],
-            p1Hits = new Customs.Coordinate[12], p2Hits = new Customs.Coordinate[12];
-        private Customs.Coordinate aiShot = new();
+        private GameSave gameSave = new();
+        private Coordinate[] p1Ships = new Coordinate[12], p2Ships = new Coordinate[12],
+            manualCords = new Coordinate[2], p1Shots = new Coordinate[36], p2Shots = new Coordinate[36],
+            p1Hits = new Coordinate[12], p2Hits = new Coordinate[12];
+        private Coordinate aiShot = new();
 
         private bool aiShipsCreated, p1ShipsCreated, gameEnded;
         private string currentPlayer, startingPlayer;
@@ -69,7 +70,7 @@ namespace BattleShips.UI
             {
                 Button? button = sender as Button;
                 string[] cordsS = button.Content.ToString().Split('_');
-                Customs.Coordinate manCord = new();
+                Coordinate manCord = new();
                 manCord.R = Int32.Parse(cordsS[0]);
                 manCord.C = Int32.Parse(cordsS[1]);
                 manualCords[manualChoosen] = manCord;
@@ -88,7 +89,7 @@ namespace BattleShips.UI
             {
                 Button? button = sender as Button;
                 string[] cordsS = button.Content.ToString().Split('_');
-                Customs.Coordinate manCord = new();
+                Coordinate manCord = new();
                 manCord.R = Int32.Parse(cordsS[0]);
                 manCord.C = Int32.Parse(cordsS[1]);
                 manualCords[manualChoosen] = manCord;
@@ -181,7 +182,7 @@ namespace BattleShips.UI
 
         private void ChooseStarterAi()
         {
-            Customs.Coordinate[] aiGenerated = aiBehav.GenerateShipsAi();
+            Coordinate[] aiGenerated = aiBehav.GenerateShipsAi();
             p2Ships = aiGenerated;
             SetAiShips(12);
             var rand = new Random();
@@ -231,7 +232,7 @@ namespace BattleShips.UI
             switch (currentPlayer)
             {
                 case "p1":
-                    Customs.Coordinate[] p1Generated = aiBehav.GenerateShipsP1();
+                    Coordinate[] p1Generated = aiBehav.GenerateShipsP1();
                     p1Ships = p1Generated;
                     SetP1Ships(12);
                     if (gameSave.gameMode == "PvAi")
@@ -252,7 +253,7 @@ namespace BattleShips.UI
                     }
                     break;
                 case "p2":
-                    Customs.Coordinate[] p2Generated = aiBehav.GenerateShipsAi();
+                    Coordinate[] p2Generated = aiBehav.GenerateShipsAi();
                     p2Ships = p2Generated;
                     SetAiShips(12);
                     if (startingPlayer == "p2")
@@ -371,8 +372,8 @@ namespace BattleShips.UI
                 {
                     if (currentPlayer == "p1")
                     {
-                        Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
-                        if (!carrCords[0].Equals(new Customs.Coordinate()))
+                        Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
+                        if (!carrCords[0].Equals(new Coordinate()))
                         {
                             p1Ships[0] = carrCords[0];
                             p1Ships[1] = carrCords[1];
@@ -390,8 +391,8 @@ namespace BattleShips.UI
                     }
                     else if (currentPlayer == "p2")
                     {
-                        Customs.Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
-                        if (!carrCords[0].Equals(new Customs.Coordinate()))
+                        Coordinate[] carrCords = manualPlacer.Carrier(manualCords[0], manualCords[1]);
+                        if (!carrCords[0].Equals(new Coordinate()))
                         {
                             p2Ships[0] = carrCords[0];
                             p2Ships[1] = carrCords[1];
@@ -428,8 +429,8 @@ namespace BattleShips.UI
                 {
                     if (currentPlayer == "p1")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1]);
-                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
+                        Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships) && !coordinates[0].Equals(new Coordinate()))
                         {
                             p1Ships[shipNum] = coordinates[0];
                             p1Ships[shipNum + 1] = coordinates[1];
@@ -453,8 +454,8 @@ namespace BattleShips.UI
                     }
                     else if (currentPlayer == "p2")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1]);
-                        if (!manualPlacer.CollisionCheck(coordinates, p2Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
+                        Coordinate[] coordinates = manualPlacer.Destroyer(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p2Ships) && !coordinates[0].Equals(new Coordinate()))
                         {
                             p2Ships[shipNum] = coordinates[0];
                             p2Ships[shipNum + 1] = coordinates[1];
@@ -497,8 +498,8 @@ namespace BattleShips.UI
                 {
                     if (currentPlayer == "p1")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1]);
-                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
+                        Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p1Ships) && !coordinates[0].Equals(new Coordinate()))
                         {
                             p1Ships[10] = coordinates[0];
                             p1Ships[11] = coordinates[1];
@@ -512,8 +513,8 @@ namespace BattleShips.UI
                     }
                     else if (currentPlayer == "p2")
                     {
-                        Customs.Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1]);
-                        if (!manualPlacer.CollisionCheck(coordinates, p2Ships) && !coordinates[0].Equals(new Customs.Coordinate()))
+                        Coordinate[] coordinates = manualPlacer.Hunter(manualCords[0], manualCords[1]);
+                        if (!manualPlacer.CollisionCheck(coordinates, p2Ships) && !coordinates[0].Equals(new Coordinate()))
                         {
                             p2Ships[10] = coordinates[0];
                             p2Ships[11] = coordinates[1];
@@ -598,7 +599,7 @@ namespace BattleShips.UI
             {
                 Button? button = sender as Button;
                 string[] cordsS = button.Content.ToString().Split('_');
-                Customs.Coordinate coordinate = new();
+                Coordinate coordinate = new();
                 coordinate.R = Int32.Parse(cordsS[0]);
                 coordinate.C = Int32.Parse(cordsS[1]);
                 if (!shotChecker.ShotMatch(coordinate, p1Shots))
@@ -663,13 +664,13 @@ namespace BattleShips.UI
 
         private void AiAttack()
         {
-            if(!aiShot.Equals(new Customs.Coordinate()))
+            if(!aiShot.Equals(new Coordinate()))
             {
                 aiShot = aiBehav.Attack(aiShot, p2Hits, p2Shots);
             }
             else
             {
-                aiShot = aiBehav.Attack(new Customs.Coordinate(7,7), p2Hits, p2Shots);
+                aiShot = aiBehav.Attack(new Coordinate(7,7), p2Hits, p2Shots);
             }
             p2Shots[p2ShotNum++] = aiShot;
             Button? enemyB = (Button)P1Own.FindName("P1Field_" + aiShot.R + "_" + aiShot.C);
@@ -711,7 +712,7 @@ namespace BattleShips.UI
             {
                 Button? button = sender as Button;
                 string[] cordsS = button.Content.ToString().Split('_');
-                Customs.Coordinate coordinate = new();
+                Coordinate coordinate = new();
                 coordinate.R = Int32.Parse(cordsS[0]);
                 coordinate.C = Int32.Parse(cordsS[1]);
                 if (!shotChecker.ShotMatch(coordinate, p2Shots))
@@ -817,12 +818,12 @@ namespace BattleShips.UI
             return Task.Factory.StartNew(() =>
             {
                 string path = @"GameSaves.json";
-                Customs.ListOfGameSaves listOfGameSaves = new();
+                ListOfGameSaves listOfGameSaves = new();
                 if (File.Exists(path))
                 {
                     string gameSaves = File.ReadAllText(@"GameSaves.json");
-                    listOfGameSaves = JsonConvert.DeserializeObject<Customs.ListOfGameSaves>(gameSaves);
-                    List<Customs.GameSave> gameSavesList = listOfGameSaves.listOfGameSaves.ToList();
+                    listOfGameSaves = JsonConvert.DeserializeObject<ListOfGameSaves>(gameSaves);
+                    List<GameSave> gameSavesList = listOfGameSaves.listOfGameSaves.ToList();
                     gameSavesList.Add(gameSave);
                     listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
                     string newSave = JsonConvert.SerializeObject(listOfGameSaves);
@@ -830,7 +831,7 @@ namespace BattleShips.UI
                 }
                 else
                 {
-                    List<Customs.GameSave> gameSavesList = new List<Customs.GameSave>();
+                    List<GameSave> gameSavesList = new List<GameSave>();
                     gameSavesList.Add(gameSave);
                     listOfGameSaves.listOfGameSaves = gameSavesList.ToArray();
                     string newSave = JsonConvert.SerializeObject(listOfGameSaves);
