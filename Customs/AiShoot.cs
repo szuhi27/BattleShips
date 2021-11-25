@@ -58,7 +58,7 @@ namespace BattleShips.Customs
             return hit;
         }
 
-        private Coordinate RandomAttack(Coordinate[] previous)
+        public Coordinate RandomAttack(Coordinate[] previous)
         {
             Coordinate curr = new();
             Random random = new Random();
@@ -98,7 +98,7 @@ namespace BattleShips.Customs
             return TargetedShot(goodCords, prevShots);
         }
 
-        private List<Coordinate> FindGoodCords(Coordinate prev, Coordinate[] prevShots, bool searchPrevHit, List<Coordinate> coordsAround)
+        public List<Coordinate> FindGoodCords(Coordinate prev, Coordinate[] prevShots, bool searchPrevHit, List<Coordinate> coordsAround)
         {
             List<Coordinate> goodCords = new List<Coordinate>();
             for (int j = 0; j < coordsAround.Count; j++)
@@ -143,7 +143,7 @@ namespace BattleShips.Customs
             return RandomAroundLastHit(randomHit, prevShots, true);
         }
 
-        private List<Coordinate> FindHitCoords(Coordinate prev, Coordinate[] prevHits)
+        public List<Coordinate> FindHitCoords(Coordinate prev, Coordinate[] prevHits)
         {
             List<Coordinate> goodCords = new List<Coordinate>();
             List<Coordinate> coordsAround = CoordsAround(prev);
@@ -158,10 +158,5 @@ namespace BattleShips.Customs
             return goodCords;
         }
 
-        public int TestTest()
-        {
-            int i = 2;
-            return i;
-        }
     }
 }
