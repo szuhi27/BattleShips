@@ -32,7 +32,7 @@ namespace BattleShips.UI
             p1Hits = new Coordinate[12], p2Hits = new Coordinate[12];
         private Coordinate aiShot = new();
 
-        private bool aiShipsCreated, p1ShipsCreated, gameEnded;
+        private bool aiShipsCreated, p1ShipsCreated, gameEnded, fogHidden;
         private string currentPlayer, startingPlayer;
         private int manualChoosen, shipsPlaced, p1HitsNum, p2HitsNum, p1ShotNum, p2ShotNum, missesInaRow;
 
@@ -56,6 +56,7 @@ namespace BattleShips.UI
             gameSave = new();
             gameSave.rounds = 1;
             missesInaRow = 0;
+            fogHidden = false;
         }
 
         private void PlayW_Closed(object sender, EventArgs e)
@@ -63,6 +64,24 @@ namespace BattleShips.UI
             MainWindow mainWindow = new MainWindow();
             this.Visibility = Visibility.Collapsed;
             mainWindow.Show();  
+        }
+
+        private void HIdeAiFog(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.O && gameSave.gameMode == "PvAi" && Keyboard.IsKeyDown(Key.F))
+            {
+                P2Fog.Visibility = Visibility.Hidden;
+                fogHidden = true;
+            }
+        }
+
+        private void ShowAiFog(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.O && gameSave.gameMode == "PvAi" && Keyboard.IsKeyDown(Key.F))
+            {
+                P2Fog.Visibility = Visibility.Visible;
+                fogHidden = false;
+            }
         }
 
         private void P1SetupClick(object sender, RoutedEventArgs e)
@@ -330,19 +349,19 @@ namespace BattleShips.UI
             manualChoosen = 0;
             if (currentPlayer == "p1")
             {
-                SetP1Ships(shipNum);
                 Button? enemyB = (Button)P1Own.FindName("P1Field_" + manualCords[0].R + "_" + manualCords[0].C);
                 enemyB.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
                 Button? enemyB2 = (Button)P1Own.FindName("P1Field_" + manualCords[1].R + "_" + manualCords[1].C);
                 enemyB2.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
+                SetP1Ships(shipNum);
             }
             else
             {
-                SetAiShips(shipNum);
                 Button? enemyB = (Button)P2Own.FindName("P2Field_" + manualCords[0].R + "_" + manualCords[0].C);
                 enemyB.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
                 Button? enemyB2 = (Button)P2Own.FindName("P2Field_" + manualCords[1].R + "_" + manualCords[1].C);
                 enemyB2.Background = new SolidColorBrush(Color.FromRgb(100, 152, 255));
+                SetAiShips(shipNum);
             }
         }
 
@@ -596,7 +615,7 @@ namespace BattleShips.UI
 
         private void P1AttackClick(object sender, RoutedEventArgs e)
         {
-            if(currentPlayer == "p1" && !gameEnded)
+            if(currentPlayer == "p1" && !gameEnded && !fogHidden)
             {
                 Button? button = sender as Button;
                 string[] cordsS = button.Content.ToString().Split('_');
@@ -619,7 +638,7 @@ namespace BattleShips.UI
                             gameEnded = true;
                             ship = "Win";
                         }
-                        else if (p1HitsNum > 3) {
+                        else{
                             ship = shotChecker.HitCheck(coordinate ,p1Hits, p2Ships); 
                         }
                         ShotMessage(ship);
@@ -630,36 +649,42 @@ namespace BattleShips.UI
                         enemyB.Background = new SolidColorBrush(Colors.White);
                         ShotMessage("Miss");
                     }
-                    if (!gameEnded)
-                    {
-                        if (startingPlayer == "p2")
-                        {
-                            gameSave.rounds++;
-                            TopLabel.Content = "Round " + gameSave.rounds;
-                        }
-                        currentPlayer = "p2";
-                        if (gameSave.gameMode == "PvP")
-                        {
-                            P1Fog.Visibility = Visibility.Visible;
-                            P2Fog.Visibility = Visibility.Hidden;
-                        }
-                        else
-                        {
-                            AiAttack();
-                        }
-                    }
-                    else
-                    {
-                        gameSave.winner = gameSave.player1;
-                        gameSave.p1Hits = p1HitsNum;
-                        gameSave.p2Hits = p2HitsNum;
-                        GameEnded();
-                    }
+
+                    P1NextRound();
                 }
                 else
                 {
                     MessageBox.Show("You already shot there!");
                 }
+            }
+        }
+
+        private void P1NextRound()
+        {
+            if (!gameEnded)
+            {
+                if (startingPlayer == "p2")
+                {
+                    gameSave.rounds++;
+                    TopLabel.Content = "Round " + gameSave.rounds;
+                }
+                currentPlayer = "p2";
+                if (gameSave.gameMode == "PvP")
+                {
+                    P1Fog.Visibility = Visibility.Visible;
+                    P2Fog.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    AiAttack();
+                }
+            }
+            else
+            {
+                gameSave.winner = gameSave.player1;
+                gameSave.p1Hits = p1HitsNum;
+                gameSave.p2Hits = p2HitsNum;
+                GameEnded();
             }
         }
 
@@ -691,9 +716,14 @@ namespace BattleShips.UI
                 missesInaRow++;
                 enemyB.Background = new SolidColorBrush(Colors.White);
             }
+            AiNextRound();
+        }
+
+        private void AiNextRound()
+        {
             if (!gameEnded)
             {
-                if(startingPlayer == "p1")
+                if (startingPlayer == "p1")
                 {
                     gameSave.rounds++;
                     TopLabel.Content = "Round " + gameSave.rounds;
@@ -734,7 +764,7 @@ namespace BattleShips.UI
                             gameEnded = true;
                             ship = "Win";
                         }
-                        else if (p2HitsNum > 3)
+                        else
                         {
                             ship = shotChecker.HitCheck(coordinate, p2Hits, p1Ships);
                         }
@@ -746,29 +776,34 @@ namespace BattleShips.UI
                         enemyB.Background = new SolidColorBrush(Colors.White);
                         ShotMessage("Miss");
                     }
-                    if (!gameEnded)
-                    {
-                        if(startingPlayer == "p1")
-                        {
-                            gameSave.rounds++;
-                            TopLabel.Content = "Round " + gameSave.rounds;
-                        }
-                        currentPlayer = "p1";
-                        P2Fog.Visibility = Visibility.Visible;
-                        P1Fog.Visibility = Visibility.Hidden;
-                    }
-                    else
-                    {
-                        gameSave.winner = gameSave.player2;
-                        gameSave.p1Hits = p1HitsNum;
-                        gameSave.p2Hits = p2HitsNum;
-                        GameEnded();
-                    }
+                    P2NextRound();
                 }
                 else
                 {
                     MessageBox.Show("You already shot there!");
                 }
+            }
+        }
+
+        private void P2NextRound()
+        {
+            if (!gameEnded)
+            {
+                if (startingPlayer == "p1")
+                {
+                    gameSave.rounds++;
+                    TopLabel.Content = "Round " + gameSave.rounds;
+                }
+                currentPlayer = "p1";
+                P2Fog.Visibility = Visibility.Visible;
+                P1Fog.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                gameSave.winner = gameSave.player2;
+                gameSave.p1Hits = p1HitsNum;
+                gameSave.p2Hits = p2HitsNum;
+                GameEnded();
             }
         }
 
